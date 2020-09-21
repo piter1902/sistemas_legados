@@ -2,6 +2,9 @@
 # Created by https://www.toptal.com/developers/gitignore/api/linux,windows,visualstudiocode,latex
 # Edit at https://www.toptal.com/developers/gitignore?templates=linux,windows,visualstudiocode,latex
 
+#COBOL
+compiladores
+
 ### LaTeX ###
 ## Core latex/pdflatex auxiliary files:
 *.aux
