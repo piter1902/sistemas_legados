@@ -114,11 +114,11 @@
        P1.
            DISPLAY "Bienvenido a UnizarBank" AT LINE 8 COL 28.
            DISPLAY "Por favor, introduzca la tarjeta para operar" AT LINE 10 COL 18.
-
+           
            DISPLAY "Enter - Aceptar" AT LINE 24 COL 33.
 
        P1-ENTER.
-           ACCEPT CHOICE ON EXCEPTION AT LINE 24 COL 80
+           ACCEPT CHOICE AT LINE 24 COL 80 ON EXCEPTION
            IF ENTER-PRESSED
                GO TO P2
            ELSE
@@ -174,7 +174,7 @@
            DISPLAY "ESC - Salir" AT LINE 24 COL 34.
 
        PMENUA1.
-           ACCEPT CHOICE ON EXCEPTION AT LINE 24 COL 80
+           ACCEPT CHOICE AT LINE 24 COL 80 ON EXCEPTION 
                IF ESC-PRESSED
                    GO TO IMPRIMIR-CABECERA
                ELSE
@@ -204,7 +204,7 @@
            IF CHOICE = 6
                CALL "BANK7" USING TNUM
                GO TO PMENU.
-
+ 	
            IF CHOICE = 7
                CALL "BANK8" USING TNUM
                GO TO PMENU.
@@ -246,7 +246,7 @@
            DISPLAY "Enter - Aceptar" AT LINE 24 COL 33.
 
        PINT-ERR-ENTER.
-           ACCEPT CHOICE ON EXCEPTION AT LINE 24 COL 80
+           ACCEPT CHOICE AT LINE 24 COL 80 ON EXCEPTION
            IF ENTER-PRESSED
                GO TO IMPRIMIR-CABECERA
            ELSE
@@ -279,7 +279,7 @@
            DISPLAY "ESC - Cancelar" AT LINE 24 COL 65.
 
        PPIN-ERR-ENTER.
-           ACCEPT CHOICE ON EXCEPTION AT LINE 24 COL 80
+           ACCEPT CHOICE AT LINE 24 COL 80 ON EXCEPTION
            IF ENTER-PRESSED
                GO TO P2
            ELSE
