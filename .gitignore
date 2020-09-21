@@ -4,6 +4,9 @@
 
 #COBOL
 compiladores
+# Ficheros objeto
+*.so
+*.dll
 
 ### LaTeX ###
 ## Core latex/pdflatex auxiliary files:

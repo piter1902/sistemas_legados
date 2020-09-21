@@ -212,7 +212,8 @@
                                      + EURDEC-USUARIO.
 
            IF CENT-IMPOR-USER > CENT-SALDO-ORD-USER THEN
-                   DISPLAY "Indique una cantidad menor!!" AT LINE 20 COL 19
+                   DISPLAY "Indique una cantidad menor!!" 
+                    AT LINE 20 COL 19
                     WITH BACKGROUND-COLOR RED
                    GO TO INDICAR-CTA-DST
            END-IF.
@@ -256,7 +257,7 @@
            DISPLAY "ESC - Cancelar" AT LINE 24 COL 66.
 
        ENTER-VERIFICACION.
-           ACCEPT PRESSED-KEY ON EXCEPTION AT LINE 24 COL 80
+           ACCEPT PRESSED-KEY AT LINE 24 COL 80 ON EXCEPTION 
            IF ESC-PRESSED THEN
                EXIT PROGRAM
            ELSE
@@ -352,7 +353,8 @@
            PERFORM IMPRIMIR-CABECERA THRU IMPRIMIR-CABECERA.
 
            DISPLAY "Ordenar transferencia" AT LINE 8 COL 30.
-           DISPLAY "Transferencia realizada correctamente!" AT LINE 11 COL 19.
+           DISPLAY "Transferencia realizada correctamente!" 
+               AT LINE 11 COL 19.
            DISPLAY "Enter - Aceptar" AT LINE 24 COL 33.
 
            GO TO EXIT-ENTER.
