@@ -257,7 +257,8 @@
            DISPLAY ":" AT LINE 4 COL 46.
            DISPLAY MINUTOS AT LINE 4 COL 47.
 
-           DISPLAY "Compra de entradas de espectaculos" AT LINE 6 COL 22.
+           DISPLAY "Compra de entradas de espectaculos" 
+               AT LINE 6 COL 22.
 
        CONSULTA-SALDO.
            OPEN I-O F-MOVIMIENTOS.
@@ -336,7 +337,7 @@
 
        WAIT-ORDER.
 
-           ACCEPT ACCEPT-COMPRA-ENTRADAS ON EXCEPTION AT LINE 24 COL 80
+           ACCEPT ACCEPT-COMPRA-ENTRADAS AT LINE 24 COL 80 ON EXCEPTION 
 
               IF ESC-PRESSED THEN
                   CLOSE F-MOVIMIENTOS

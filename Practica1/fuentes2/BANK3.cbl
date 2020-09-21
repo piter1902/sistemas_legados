@@ -252,14 +252,18 @@
            INITIALIZE EURENT2-USUARIO.
            INITIALIZE EURDEC2-USUARIO.
 
-           DISPLAY "Se  mostraran los ultimos movimientos," AT LINE 8 COL 8.
+           DISPLAY "Se  mostraran los ultimos movimientos," 
+               AT LINE 8 COL 8.
            DISPLAY "de mas a menos recientes AT LINE 8 COL 47.".
 
-           DISPLAY "Alternativamente, indique un intervalo" AT LINE 10 COL 8.
+           DISPLAY "Alternativamente, indique un intervalo" 
+               AT LINE 10 COL 8.
            DISPLAY "de fechas y/o cantidades AT LINE 10 COL 47.".
 
-           DISPLAY "Entre las fechas   /  /     y   /  /    " AT LINE 13 COL 20.
-           DISPLAY "Cantidad entre          AT LINE 15 COL 15.   EUR y         .   EUR".
+           DISPLAY "Entre las fechas   /  /     y   /  /    " 
+               AT LINE 13 COL 20.
+           DISPLAY "Cantidad entre          AT LINE 15 COL 15.         "   
+               "EUR y         .   EUR".
 
            DISPLAY "Enter - Aceptar" AT LINE 24 COL 01.
            DISPLAY "ESC - Cancelar" AT LINE 24 COL 65.
@@ -334,7 +338,7 @@
 
        WAIT-ORDER.
 
-           ACCEPT PRESSED-KEY ON EXCEPTION AT LINE 24 COL 80
+           ACCEPT PRESSED-KEY AT LINE 24 COL 80 ON EXCEPTION 
 
               IF ESC-PRESSED THEN
                   CLOSE F-MOVIMIENTOS

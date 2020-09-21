@@ -113,7 +113,8 @@
 
        P1.
            DISPLAY "Bienvenido a UnizarBank" AT LINE 8 COL 28.
-           DISPLAY "Por favor, introduzca la tarjeta para operar" AT LINE 10 COL 18.
+           DISPLAY "Por favor, introduzca la tarjeta para operar" 
+               AT LINE 10 COL 18.
            
            DISPLAY "Enter - Aceptar" AT LINE 24 COL 33.
 
@@ -169,7 +170,8 @@
            DISPLAY "3 - Retirar efectivo" AT LINE 10 COL 15.
            DISPLAY "4 - Ingresar efectivo" AT LINE 11 COL 15.
            DISPLAY "5 - Ordenar transferencia" AT LINE 12 COL 15.
-           DISPLAY "6 - Comprar entradas de espectaculos" AT LINE 13 COL 15.
+           DISPLAY "6 - Comprar entradas de espectaculos" 
+               AT LINE 13 COL 15.
            DISPLAY "7 - Cambiar clave" AT LINE 15 COL 15.
            DISPLAY "ESC - Salir" AT LINE 24 COL 34.
 
@@ -237,7 +239,8 @@
            DISPLAY "(9 20) Se ha sobrepasado el numero de intentos"
                WITH FOREGROUND-COLOR IS BLACK
                     BACKGROUND-COLOR IS RED.
-           DISPLAY "Por su seguridad se ha bloqueado la tarjeta" AT LINE 11 COL 18
+           DISPLAY "Por su seguridad se ha bloqueado la tarjeta" 
+               AT LINE 11 COL 18
                WITH FOREGROUND-COLOR IS BLACK
                     BACKGROUND-COLOR IS RED.
            DISPLAY "Acuda a una sucursal" AT LINE 12 COL 30
