@@ -146,7 +146,7 @@
 
        NO-MOVIMIENTOS.
            DISPLAY "0" AT LINE 12 COL 34.
-           DISPLAY " AT LINE 12 COL 35.".
+           DISPLAY "." AT LINE 12 COL 35.
            DISPLAY "00" AT LINE 12 COL 36.
            DISPLAY "EUR" AT LINE 12 COL 39.
 
