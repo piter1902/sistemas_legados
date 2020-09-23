@@ -121,15 +121,15 @@
                LINE 13 COL 53 PIC 9(2) USING MES2-USUARIO.
            05 ANO-MAX BLANK ZERO AUTO UNDERLINE
                LINE 13 COL 56 PIC 9(4) USING ANO2-USUARIO.
-           05 EUR-ENT-MIN BLANK ZERO AUTO UNDERLINE
+           05 EUR-ENT-MIN AUTO UNDERLINE
                SIGN IS LEADING SEPARATE
-               LINE 15 COL 30 PIC -9(7) USING EURENT1-USUARIO.
-           05 EUR-DEC-MIN BLANK ZERO AUTO UNDERLINE
+               LINE 15 COL 30 PIC S9(7) USING EURENT1-USUARIO.
+           05 EUR-DEC-MIN AUTO UNDERLINE
                LINE 15 COL 39 PIC 9(2) USING EURDEC1-USUARIO.
-           05 EUR-ENT-MAX BLANK ZERO AUTO UNDERLINE
+           05 EUR-ENT-MAX AUTO UNDERLINE
                SIGN IS LEADING SEPARATE
-               LINE 15 COL 48 PIC -9(7) USING EURENT2-USUARIO.
-           05 EUR-DEC-MAX BLANK ZERO UNDERLINE
+               LINE 15 COL 48 PIC S9(7) USING EURENT2-USUARIO.
+           05 EUR-DEC-MAX UNDERLINE
                LINE 15 COL 57 PIC 9(2) USING EURDEC2-USUARIO.
 
        01 FILA-MOVIMIENTO-PAR.
@@ -254,16 +254,16 @@
 
            DISPLAY "Se  mostraran los ultimos movimientos," 
                AT LINE 8 COL 8.
-           DISPLAY "de mas a menos recientes AT LINE 8 COL 47.".
+           DISPLAY "de mas a menos recientes" AT LINE 8 COL 47.
 
            DISPLAY "Alternativamente, indique un intervalo" 
                AT LINE 10 COL 8.
-           DISPLAY "de fechas y/o cantidades AT LINE 10 COL 47.".
+           DISPLAY "de fechas y/o cantidades" AT LINE 10 COL 47.
 
            DISPLAY "Entre las fechas   /  /     y   /  /    " 
                AT LINE 13 COL 20.
-           DISPLAY "Cantidad entre          AT LINE 15 COL 15.         "   
-               "EUR y         .   EUR".
+           DISPLAY "Cantidad entre         .   EUR y         .   EUR"
+               AT LINE 15 COL 15.
 
            DISPLAY "Enter - Aceptar" AT LINE 24 COL 01.
            DISPLAY "ESC - Cancelar" AT LINE 24 COL 65.
@@ -293,7 +293,7 @@
            PERFORM IMPRIMIR-CABECERA THRU IMPRIMIR-CABECERA.
 
            OPEN INPUT F-MOVIMIENTOS.
-               IF FSM <> 30
+               IF FSM <> 00
                    GO TO PSYS-ERR.
 
        POSICIONAR-FINAL.
@@ -309,9 +309,9 @@
            DISPLAY "|" AT LINE 7 COL 66.
            DISPLAY "SALDO" AT LINE 7 COL 71.
 
-           DISPLAY "Re AT LINE 24 COL 2. pag - Esp. anteriores".
+           DISPLAY "Re pag - Esp. anteriores" AT LINE 24 COL 2.
            DISPLAY "ESC - Salir" AT LINE 24 COL 33.
-           DISPLAY "Av AT LINE 24 COL 54. pag - Esp. posteriores".
+           DISPLAY "Av pag - Esp. posteriores" AT LINE 24 COL 54.
 
            MOVE 0 TO MOV-EN-PANTALLA.
            MOVE 7 TO LINEA-MOV-ACTUAL.

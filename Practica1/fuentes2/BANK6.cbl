@@ -114,7 +114,7 @@
            05 FILLER AUTO UNDERLINE
                SIGN IS LEADING SEPARATE
                LINE 16 COL 54 PIC S9(7) USING EURENT-USUARIO.
-           05 FILLER BLANK ZERO UNDERLINE
+           05 FILLER UNDERLINE
                LINE 16 COL 63 PIC 9(2) USING EURDEC-USUARIO.
 
        01 SALDO-DISPLAY.
@@ -155,7 +155,7 @@
 
        MOVIMIENTOS-OPEN.
            OPEN I-O F-MOVIMIENTOS.
-           IF FSM <> 30 THEN
+           IF FSM <> 00 THEN
                GO TO PSYS-ERR
            END-IF.
 
@@ -195,7 +195,7 @@
            DISPLAY "Indica la cuenta destino" AT LINE 12 COL 19.
            DISPLAY "y nombre del titular" AT LINE 14 COL 19.
            DISPLAY "Indique la cantidad a transferir" AT LINE 16 COL 19.
-           DISPLAY "," AT LINE 16 COL 61.
+           DISPLAY "." AT LINE 16 COL 62.
            DISPLAY "EUR" AT LINE 16 COL 66.
 
            COMPUTE CENT-SALDO-ORD-USER = (MOV-SALDOPOS-ENT * 100)
@@ -222,7 +222,7 @@
 
        NO-MOVIMIENTOS.
            DISPLAY "0" AT LINE 10 COL 51.
-           DISPLAY " AT LINE 10 COL 52.".
+           DISPLAY "." AT LINE 10 COL 52.
            DISPLAY "00" AT LINE 10 COL 53.
            DISPLAY "EUR" AT LINE 10 COL 54.
 
@@ -247,7 +247,7 @@
            DISPLAY "Ordenar Transferencia" AT LINE 08 COL 30.
            DISPLAY "Va a transferir:" AT LINE 11 COL 19.
            DISPLAY EURENT-USUARIO AT LINE 11 COL 38.
-           DISPLAY " AT LINE 11 COL 45.".
+           DISPLAY "." AT LINE 11 COL 45.
            DISPLAY EURDEC-USUARIO AT LINE 11 COL 46.
            DISPLAY "EUR de su cuenta" AT LINE 11 COL 49.
            DISPLAY "a la cuenta cuyo titular es" AT LINE 12 COL 19.
@@ -266,7 +266,7 @@
 
        VERIFICACION-CTA-CORRECTA.
            OPEN I-O TARJETAS.
-           IF FST <> 30
+           IF FST <> 00
               GO TO PSYS-ERR.
 
            MOVE CUENTA-DESTINO TO TNUM-E.

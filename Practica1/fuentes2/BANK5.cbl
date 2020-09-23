@@ -144,7 +144,7 @@
            INITIALIZE CENT-ACUMULADOR.
 
            OPEN I-O F-MOVIMIENTOS.
-           IF FSM <> 30
+           IF FSM <> 00
               GO TO PSYS-ERR.
 
            MOVE 0 TO LAST-MOV-NUM.
@@ -165,7 +165,7 @@
 
        CONSULTA-SALDO-USUARIO SECTION.
            OPEN INPUT F-MOVIMIENTOS.
-           IF FSM <> 30
+           IF FSM <> 00
                GO TO PSYS-ERR.
 
            MOVE 0 TO LAST-USER-MOV-NUM.
@@ -194,7 +194,7 @@
            MOVE LAST-USER-MOV-NUM TO MOV-NUM.
 
            OPEN INPUT F-MOVIMIENTOS.
-           IF FSM <> 30
+           IF FSM <> 00
                GO TO PSYS-ERR.
 
            READ F-MOVIMIENTOS INVALID KEY GO TO PSYS-ERR.
@@ -221,7 +221,7 @@
 
            DISPLAY "Por favor,introduzca billetes" AT LINE 11 COL 19.
            DISPLAY "Cantidad introducida:         " AT LINE 13 COL 19.
-           DISPLAY " AT LINE 13 COL 48.".
+           DISPLAY "." AT LINE 13 COL 48.
            DISPLAY "EUR" AT LINE 13 COL 52.
 
        CONF2.
@@ -241,7 +241,7 @@
 
        INSERTAR-MOVIMIENTO SECTION.
            OPEN I-O F-MOVIMIENTOS.
-           IF FSM <> 30
+           IF FSM <> 00
               GO TO PSYS-ERR.
 
            ADD CENT-IMPOR-USER TO CENT-SALDO-USER
@@ -290,7 +290,7 @@
            DISPLAY "Se han recibido correctamente:" AT LINE 10 COL 19.
            DISPLAY EURENT-USUARIO AT LINE 10 COL 50.
            DISPLAY EURDEC-USUARIO AT LINE 10 COL 58.
-           DISPLAY " AT LINE 10 COL 57.".
+           DISPLAY "." AT LINE 10 COL 57.
            DISPLAY "EUR" AT LINE 10 COL 61.
            DISPLAY "El saldo resultante es de:" AT LINE 11 COL 19.
 
