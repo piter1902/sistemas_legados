@@ -236,7 +236,8 @@
            CLOSE INTENTOS.
 
            PERFORM IMPRIMIR-CABECERA THRU IMPRIMIR-CABECERA.
-           DISPLAY "(9 20) Se ha sobrepasado el numero de intentos"
+           DISPLAY "Se ha sobrepasado el numero de intentos"
+               AT LINE 9 COL 20
                WITH FOREGROUND-COLOR IS BLACK
                     BACKGROUND-COLOR IS RED.
            DISPLAY "Por su seguridad se ha bloqueado la tarjeta" 

@@ -253,7 +253,7 @@
            DISPLAY MES AT LINE 4 COL 35.
            DISPLAY "-" AT LINE 4 COL 37.
            DISPLAY ANO AT LINE 4 COL 38.
-           DISPLAY HORAS AT LINE 4 COL 38.
+           DISPLAY HORAS AT LINE 4 COL 44.
            DISPLAY ":" AT LINE 4 COL 46.
            DISPLAY MINUTOS AT LINE 4 COL 47.
 
@@ -262,7 +262,7 @@
 
        CONSULTA-SALDO.
            OPEN I-O F-MOVIMIENTOS.
-           IF FSM <> 30
+           IF FSM <> 00
                GO TO PSYS-ERR.
 
            MOVE 0 TO LAST-USER-MOV-NUM.
@@ -303,15 +303,15 @@
            DISPLAY "|" AT LINE 9 COL 72.
            DISPLAY "IMPORTE" AT LINE 9 COL 73.
 
-           DISPLAY "Re AT LINE 24 COL 2. pag - Esp. anteriores".
+           DISPLAY "Re pag - Esp. anteriores" AT LINE 24 COL 2.
            DISPLAY "ESC - Salir" AT LINE 24 COL 33.
-           DISPLAY "Av AT LINE 24 COL 54. pag - Esp. posteriores".
+           DISPLAY "Av pag - Esp. posteriores" AT LINE 24 COL 54.
 
            MOVE 0 TO ESP-EN-PANTALLA.
            MOVE 9 TO LINEA-ESP-ACTUAL.
 
            OPEN I-O F-ESPECTACULOS.
-           IF FSE <> 30
+           IF FSE <> 00
                GO TO PSYS-ERR.
 
 
@@ -319,7 +319,7 @@
            READ F-ESPECTACULOS NEXT RECORD AT END GO WAIT-ORDER.
                MOVE 1 TO ESP-VALIDO.
 
-               PERFORM FILTRADO THRU FILTRADO.
+               *>PERFORM FILTRADO THRU FILTRADO.
 
                IF ESP-VALIDO = 1
                    ADD 1 TO LINEA-ESP-ACTUAL
@@ -423,7 +423,7 @@
 
            DISPLAY "Importe total: " AT LINE 14 COL 15.
            DISPLAY IMPORTE-ENTRADAS-ENT AT LINE 14 COL 30.
-           DISPLAY " AT LINE 14 COL 36.".
+           DISPLAY "." AT LINE 14 COL 36.
            DISPLAY IMPORTE-ENTRADAS-DEC AT LINE 14 COL 37.
            DISPLAY "EUR" AT LINE 14 COL 40.
 
@@ -484,7 +484,7 @@
            DISPLAY "Por favor, retire las entradas" AT LINE 9 COL 25.
            DISPLAY "El saldo resultante es de" AT LINE 12 COL 21.
            DISPLAY SALDOPOSTERIOR.
-           DISPLAY " AT LINE 12 COL 57.".
+           DISPLAY "." AT LINE 12 COL 57.
            DISPLAY SALDO-POST-DEC AT LINE 12 COL 58.
 
            DISPLAY "Enter - Aceptar" AT LINE 24 COL 33.
