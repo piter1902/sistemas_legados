@@ -140,7 +140,7 @@
        IMPRIMIR-CABECERA.
            DISPLAY BLANK-SCREEN.
            DISPLAY "Cajero Automatico UnizarBank" AT LINE 2 COL 26
-               WITH FOREGROUND-COLOR IS 1.
+               WITH FOREGROUND-COLOR IS CYAN.
 
            MOVE FUNCTION CURRENT-DATE TO CAMPOS-FECHA.
 
@@ -370,10 +370,10 @@
 
            PERFORM IMPRIMIR-CABECERA THRU IMPRIMIR-CABECERA.
            DISPLAY "Ha ocurrido un error interno" AT LINE 09 COL 25
-               WITH FOREGROUND-COLOR IS BLACK
+               WITH FOREGROUND-COLOR IS WHITE
                     BACKGROUND-COLOR IS RED.
            DISPLAY "Vuelva mas tarde" AT LINE 11 COL 32
-               WITH FOREGROUND-COLOR IS BLACK
+               WITH FOREGROUND-COLOR IS WHITE
                     BACKGROUND-COLOR IS RED.
            DISPLAY "Enter - Aceptar" AT LINE 24 COL 33.
 
@@ -384,10 +384,10 @@
            PERFORM IMPRIMIR-CABECERA THRU IMPRIMIR-CABECERA.
            DISPLAY "Ha ocurrido un error interno de mierda" 
                AT LINE 09 COL 25
-               WITH FOREGROUND-COLOR IS BLACK
+               WITH FOREGROUND-COLOR IS WHITE
                     BACKGROUND-COLOR IS RED.
            DISPLAY "Vuelva mas tarde" AT LINE 11 COL 32
-               WITH FOREGROUND-COLOR IS BLACK
+               WITH FOREGROUND-COLOR IS WHITE
                     BACKGROUND-COLOR IS RED.
            DISPLAY "Enter - Aceptar" AT LINE 24 COL 33.
 

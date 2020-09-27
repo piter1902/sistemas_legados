@@ -97,7 +97,7 @@
            DISPLAY BLANK-SCREEN.
 
            DISPLAY "Cajero Automatico UnizarBank" AT LINE 2 COL 26
-               WITH FOREGROUND-COLOR IS BLUE.
+               WITH FOREGROUND-COLOR IS CYAN.
 
            MOVE FUNCTION CURRENT-DATE TO CAMPOS-FECHA.
 
@@ -221,10 +221,10 @@
 
            PERFORM IMPRIMIR-CABECERA THRU IMPRIMIR-CABECERA.
            DISPLAY "Ha ocurrido un error interno" AT LINE 9 COL 25
-               WITH FOREGROUND-COLOR IS BLACK
+               WITH FOREGROUND-COLOR IS WHITE
                     BACKGROUND-COLOR IS RED.
            DISPLAY "Vuelva mas tarde" AT LINE 11 COL 32
-               WITH FOREGROUND-COLOR IS BLACK
+               WITH FOREGROUND-COLOR IS WHITE
                     BACKGROUND-COLOR IS RED.
            DISPLAY "Enter - Aceptar" AT LINE 24 COL 33.
            GO TO PINT-ERR-ENTER.
@@ -238,14 +238,14 @@
            PERFORM IMPRIMIR-CABECERA THRU IMPRIMIR-CABECERA.
            DISPLAY "Se ha sobrepasado el numero de intentos"
                AT LINE 9 COL 20
-               WITH FOREGROUND-COLOR IS BLACK
+               WITH FOREGROUND-COLOR IS WHITE
                     BACKGROUND-COLOR IS RED.
            DISPLAY "Por su seguridad se ha bloqueado la tarjeta" 
                AT LINE 11 COL 18
-               WITH FOREGROUND-COLOR IS BLACK
+               WITH FOREGROUND-COLOR IS WHITE
                     BACKGROUND-COLOR IS RED.
            DISPLAY "Acuda a una sucursal" AT LINE 12 COL 30
-               WITH FOREGROUND-COLOR IS BLACK
+               WITH FOREGROUND-COLOR IS WHITE
                     BACKGROUND-COLOR IS RED.
            DISPLAY "Enter - Aceptar" AT LINE 24 COL 33.
 
@@ -266,17 +266,17 @@
 
            PERFORM IMPRIMIR-CABECERA THRU IMPRIMIR-CABECERA.
            DISPLAY "El codigo PIN es incorrecto" AT LINE 9 COL 26
-               WITH FOREGROUND-COLOR IS BLACK
+               WITH FOREGROUND-COLOR IS WHITE
                     BACKGROUND-COLOR IS RED.
            DISPLAY "Le quedan " AT LINE 11 COL 30
-               WITH FOREGROUND-COLOR IS BLACK
+               WITH FOREGROUND-COLOR IS WHITE
                     BACKGROUND-COLOR IS RED.
            DISPLAY IINTENTOS AT LINE 11 COL 40
-               WITH FOREGROUND-COLOR IS BLACK
+               WITH FOREGROUND-COLOR IS WHITE
                     BACKGROUND-COLOR IS RED.
            DISPLAY " intentos" AT LINE 11 COL 42
 
-               WITH FOREGROUND-COLOR IS BLACK
+               WITH FOREGROUND-COLOR IS WHITE
                     BACKGROUND-COLOR IS RED.
 
            DISPLAY "Enter - Aceptar" AT LINE 24 COL 1.
@@ -292,7 +292,7 @@
                ELSE
                    GO TO PPIN-ERR-ENTER.
            GO TO P2.
-           
+
        REINICIAR-INTENTOS.
            MOVE 3 TO IINTENTOS.
            REWRITE INTENTOSREG INVALID KEY GO TO PSYS-ERR.
