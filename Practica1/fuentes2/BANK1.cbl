@@ -291,8 +291,8 @@
                    GO TO IMPRIMIR-CABECERA
                ELSE
                    GO TO PPIN-ERR-ENTER.
-
-
+           GO TO P2.
+           
        REINICIAR-INTENTOS.
            MOVE 3 TO IINTENTOS.
            REWRITE INTENTOSREG INVALID KEY GO TO PSYS-ERR.

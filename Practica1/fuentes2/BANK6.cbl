@@ -280,7 +280,7 @@
        LECTURA-SALDO-DST.
            READ F-MOVIMIENTOS NEXT RECORD AT END GO TO GUARDAR-TRF.
            IF MOV-TARJETA = CUENTA-DESTINO THEN
-               IF LAST-USER-DST-MOV-NUM < MOV-NUM THEN
+               IF LAST-USER-DST-MOV-NUM <= MOV-NUM THEN
                    MOVE MOV-NUM TO LAST-USER-DST-MOV-NUM
                END-IF
            END-IF.
@@ -291,7 +291,12 @@
            CLOSE F-MOVIMIENTOS.
            MOVE LAST-USER-DST-MOV-NUM TO MOV-NUM.
            PERFORM MOVIMIENTOS-OPEN THRU MOVIMIENTOS-OPEN.
-           READ F-MOVIMIENTOS INVALID KEY GO PSYS-ERR.
+           IF MOV-NUM = 0 THEN
+               MOVE 0 TO MOV-SALDOPOS-ENT
+               MOVE 0 TO MOV-SALDOPOS-DEC
+           ELSE
+               READ F-MOVIMIENTOS INVALID KEY GO PSYS-ERR-1
+           END-IF.
 
            COMPUTE CENT-SALDO-DST-USER = (MOV-SALDOPOS-ENT * 100)
                                          + MOV-SALDOPOS-DEC.
@@ -365,6 +370,20 @@
 
            PERFORM IMPRIMIR-CABECERA THRU IMPRIMIR-CABECERA.
            DISPLAY "Ha ocurrido un error interno" AT LINE 09 COL 25
+               WITH FOREGROUND-COLOR IS BLACK
+                    BACKGROUND-COLOR IS RED.
+           DISPLAY "Vuelva mas tarde" AT LINE 11 COL 32
+               WITH FOREGROUND-COLOR IS BLACK
+                    BACKGROUND-COLOR IS RED.
+           DISPLAY "Enter - Aceptar" AT LINE 24 COL 33.
+
+       PSYS-ERR-1.
+           CLOSE TARJETAS.
+           CLOSE F-MOVIMIENTOS.
+
+           PERFORM IMPRIMIR-CABECERA THRU IMPRIMIR-CABECERA.
+           DISPLAY "Ha ocurrido un error interno de mierda" 
+               AT LINE 09 COL 25
                WITH FOREGROUND-COLOR IS BLACK
                     BACKGROUND-COLOR IS RED.
            DISPLAY "Vuelva mas tarde" AT LINE 11 COL 32
