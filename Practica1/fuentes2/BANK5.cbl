@@ -71,8 +71,10 @@
        77 LAST-USER-MOV-NUM        PIC   9(35).
        77 LAST-MOV-NUM             PIC   9(35).
 
-       77 EURENT-USUARIO           PIC    9(7).
-       77 EURDEC-USUARIO           PIC    9(2).
+       77 EUR50-USUARIO            PIC    9(7).
+       77 EUR20-USUARIO            PIC    9(7).
+       77 EUR10-USUARIO            PIC    9(7).
+
        77 SALDO-USUARIO-ENT        PIC   S9(9).
        77 SALDO-USUARIO-DEC        PIC    9(2).
        77 CENT-SALDO-USER          PIC  S9(11).
@@ -93,11 +95,13 @@
 
 
        01 ENTRADA-USUARIO.
-           05 FILLER BLANK ZERO AUTO UNDERLINE
-               LINE 13 COL 41 PIC 9(7) USING EURENT-USUARIO.
            05 FILLER BLANK ZERO UNDERLINE
-               LINE 13 COL 49 PIC 9(2) USING EURDEC-USUARIO.
-
+               LINE 13 COL 41 PIC 9(7) USING EUR50-USUARIO.
+           05 FILLER BLANK ZERO UNDERLINE
+               LINE 14 COL 41 PIC 9(7) USING EUR20-USUARIO.
+           05 FILLER BLANK ZERO UNDERLINE
+               LINE 15 COL 41 PIC 9(7) USING EUR10-USUARIO.
+           
        01 SALDO-DISPLAY.
            05 FILLER SIGN IS LEADING SEPARATE
                LINE 10 COL 33 PIC -9(7) FROM SALDO-USUARIO-ENT.
@@ -210,8 +214,8 @@
 
 
        PANTALLA-INGRESO SECTION.
-           INITIALIZE EURENT-USUARIO.
-           INITIALIZE EURDEC-USUARIO.
+        *>    INITIALIZE EURENT-USUARIO.
+        *>    INITIALIZE EURDEC-USUARIO.
 
            DISPLAY "ESC - Finalizar ingreso efectivo" AT LINE 24 COL 33.
            DISPLAY "Ingresar efectivo" AT LINE 8 COL 30.
@@ -220,9 +224,9 @@
            DISPLAY SALDO-DISPLAY.
 
            DISPLAY "Por favor,introduzca billetes" AT LINE 11 COL 19.
-           DISPLAY "Cantidad introducida:         " AT LINE 13 COL 19.
-           DISPLAY "." AT LINE 13 COL 48.
-           DISPLAY "EUR" AT LINE 13 COL 52.
+           DISPLAY "Billetes de 50:         " AT LINE 13 COL 19.
+           DISPLAY "Billetes de 20:         " AT LINE 14 COL 19.
+           DISPLAY "Billetes de 10:         " AT LINE 15 COL 19.
 
        CONF2.
            ACCEPT ENTRADA-USUARIO ON EXCEPTION
@@ -232,8 +236,10 @@
                    GO TO CONF2
                END-IF.
 
-           COMPUTE CENT-IMPOR-USER = (EURENT-USUARIO * 100)
-                                     + EURDEC-USUARIO.
+           COMPUTE CENT-IMPOR-USER = (EUR50-USUARIO * 50)
+                                     + (EUR20-USUARIO * 20)
+                                     + (EUR10-USUARIO * 10).
+           MULTIPLY 100 BY CENT-IMPOR-USER.
            ADD CENT-IMPOR-USER TO CENT-ACUMULADOR.
 
 
@@ -263,8 +269,8 @@
            MOVE MINUTOS                 TO MOV-MIN.
            MOVE SEGUNDOS                TO MOV-SEG.
 
-           MOVE EURENT-USUARIO          TO MOV-IMPORTE-ENT.
-           MOVE EURDEC-USUARIO          TO MOV-IMPORTE-DEC.
+           MOVE CENT-IMPOR-USER         TO MOV-IMPORTE-ENT.
+           MOVE 0                       TO MOV-IMPORTE-DEC.
 
            MOVE CON                     TO MOV-CONCEPTO.
 
@@ -281,15 +287,15 @@
 
        PANT SECTION.
 
-           COMPUTE EURENT-USUARIO = (CENT-ACUMULADOR / 100).
-           MOVE FUNCTION MOD(CENT-ACUMULADOR, 100)
-               TO EURDEC-USUARIO.
+           COMPUTE CENT-IMPOR-USER = CENT-ACUMULADOR.
+        *>    MOVE FUNCTION MOD(CENT-ACUMULADOR, 100)
+        *>        TO EURDEC-USUARIO.
 
            PERFORM IMPRIMIR-CABECERA THRU IMPRIMIR-CABECERA.
            DISPLAY "Ingresar efectivo" AT LINE 8 COL 30.
            DISPLAY "Se han recibido correctamente:" AT LINE 10 COL 19.
-           DISPLAY EURENT-USUARIO AT LINE 10 COL 50.
-           DISPLAY EURDEC-USUARIO AT LINE 10 COL 58.
+           DISPLAY CENT-IMPOR-USER AT LINE 10 COL 50.
+           DISPLAY "0" AT LINE 10 COL 58.
            DISPLAY "." AT LINE 10 COL 57.
            DISPLAY "EUR" AT LINE 10 COL 61.
            DISPLAY "El saldo resultante es de:" AT LINE 11 COL 19.
