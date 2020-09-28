@@ -77,7 +77,7 @@
            05 PIN-NUEVO-2          PIC 9(4).
 
        77 PRESSED-KEY              PIC  9(4) BLANK ZERO.
-       77 CHOICE                   PIC  9(1).
+       77 CHOICE                   PIC  9(1) BLANK ZERO.
 
        LINKAGE SECTION.
        77 TNUM-PRINCIPAL           PIC  9(16).

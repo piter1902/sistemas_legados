@@ -178,7 +178,7 @@
            DISPLAY "Saldo Actual:" AT LINE 10 COL 19.
 
            DISPLAY "Enter - Confirmar" AT LINE 24 COL 2.
-           DISPLAY "ESC - Cancelar" AT LINE 24 COL 66.
+           DISPLAY "ESC - Cancelar" AT LINE 24 COL 61.
 
            IF LAST-USER-ORD-MOV-NUM = 0 THEN
                GO TO NO-MOVIMIENTOS
@@ -254,10 +254,10 @@
            DISPLAY NOMBRE-DESTINO AT LINE 12 COL 48.
 
            DISPLAY "Enter - Confirmar" AT LINE 24 COL 2.
-           DISPLAY "ESC - Cancelar" AT LINE 24 COL 66.
+           DISPLAY "ESC - Cancelar" AT LINE 24 COL 61.
 
        ENTER-VERIFICACION.
-           ACCEPT PRESSED-KEY AT LINE 24 COL 80 ON EXCEPTION 
+           ACCEPT PRESSED-KEY AT LINE 24 COL 76 ON EXCEPTION 
            IF ESC-PRESSED THEN
                EXIT PROGRAM
            ELSE
@@ -295,7 +295,7 @@
                MOVE 0 TO MOV-SALDOPOS-ENT
                MOVE 0 TO MOV-SALDOPOS-DEC
            ELSE
-               READ F-MOVIMIENTOS INVALID KEY GO PSYS-ERR-1
+               READ F-MOVIMIENTOS INVALID KEY GO PSYS-ERR
            END-IF.
 
            COMPUTE CENT-SALDO-DST-USER = (MOV-SALDOPOS-ENT * 100)
@@ -377,22 +377,8 @@
                     BACKGROUND-COLOR IS RED.
            DISPLAY "Enter - Aceptar" AT LINE 24 COL 33.
 
-       PSYS-ERR-1.
-           CLOSE TARJETAS.
-           CLOSE F-MOVIMIENTOS.
-
-           PERFORM IMPRIMIR-CABECERA THRU IMPRIMIR-CABECERA.
-           DISPLAY "Ha ocurrido un error interno de mierda" 
-               AT LINE 09 COL 25
-               WITH FOREGROUND-COLOR IS WHITE
-                    BACKGROUND-COLOR IS RED.
-           DISPLAY "Vuelva mas tarde" AT LINE 11 COL 32
-               WITH FOREGROUND-COLOR IS WHITE
-                    BACKGROUND-COLOR IS RED.
-           DISPLAY "Enter - Aceptar" AT LINE 24 COL 33.
-
        EXIT-ENTER.
-           ACCEPT PRESSED-KEY AT LINE 24 COL 80
+           ACCEPT PRESSED-KEY AT LINE 24 COL 76
            IF ENTER-PRESSED
                EXIT PROGRAM
            ELSE
@@ -401,7 +387,8 @@
        USER-BAD.
            CLOSE TARJETAS.
            PERFORM IMPRIMIR-CABECERA THRU IMPRIMIR-CABECERA.
-           DISPLAY "La cuenta introducida es incorrecta" AT LINE 9 COL 22
+           DISPLAY "La cuenta introducida es incorrecta" 
+               AT LINE 9 COL 22
                WITH FOREGROUND-COLOR IS BLACK
                     BACKGROUND-COLOR IS RED.
            DISPLAY "Enter - Salir" AT LINE 24 COL 33.
