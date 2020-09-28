@@ -73,7 +73,7 @@
 
        77 PRESSED-KEY              PIC  9(4).
        77 PIN-INTRODUCIDO          PIC  9(4).
-       77 CHOICE                   PIC  9(1).
+       77 CHOICE                   PIC  9(1) BLANK WHEN ZERO.
 
 
        SCREEN SECTION.
@@ -85,9 +85,6 @@
                PIC 9(16) USING TNUM.
            05 PIN-ACCEPT BLANK ZERO SECURE LINE 09 COL 50
                PIC 9(4) USING PIN-INTRODUCIDO.
-       01 CHOICE-ACCEPT.
-           05 CHOICEACCEPT BLANK ZERO AUTO LINE 24 COL 80
-               PIC 9(1) USING CHOICE.
 
 
        PROCEDURE DIVISION.
@@ -178,7 +175,7 @@
            DISPLAY "ESC - Salir" AT LINE 24 COL 34.
 
        PMENUA1.
-           ACCEPT CHOICE-ACCEPT ON EXCEPTION 
+           ACCEPT CHOICE AT LINE 24 COL 80 ON EXCEPTION 
                IF ESC-PRESSED
                    GO TO IMPRIMIR-CABECERA
                ELSE

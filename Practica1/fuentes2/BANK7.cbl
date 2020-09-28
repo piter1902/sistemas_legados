@@ -319,7 +319,7 @@
            READ F-ESPECTACULOS NEXT RECORD AT END GO WAIT-ORDER.
                MOVE 1 TO ESP-VALIDO.
 
-               *>PERFORM FILTRADO THRU FILTRADO.
+               PERFORM FILTRADO THRU FILTRADO.
 
                IF ESP-VALIDO = 1
                    ADD 1 TO LINEA-ESP-ACTUAL
