@@ -169,9 +169,10 @@
            DISPLAY "3 - Retirar efectivo" AT LINE 10 COL 15.
            DISPLAY "4 - Ingresar efectivo" AT LINE 11 COL 15.
            DISPLAY "5 - Ordenar transferencia" AT LINE 12 COL 15.
-           DISPLAY "6 - Comprar entradas de espectaculos" 
-               AT LINE 13 COL 15.
-           DISPLAY "7 - Cambiar clave" AT LINE 15 COL 15.
+           DISPLAY "6 - Listado de transferencias" AT LINE 13 COL 15.
+           DISPLAY "7 - Comprar entradas de espectaculos" 
+               AT LINE 14 COL 15.
+           DISPLAY "8 - Cambiar clave" AT LINE 15 COL 15.
            DISPLAY "ESC - Salir" AT LINE 24 COL 34.
 
        PMENUA1.
@@ -201,12 +202,16 @@
            IF CHOICE = 5
                CALL "BANK6" USING TNUM
                GO TO PMENU.
+           
+           IF CHOICE = 6 
+               CALL "BANK9" USING TNUM
+               GO TO PMENU.
 
-           IF CHOICE = 6
+           IF CHOICE = 7
                CALL "BANK7" USING TNUM
                GO TO PMENU.
  	
-           IF CHOICE = 7
+           IF CHOICE = 8
                CALL "BANK8" USING TNUM
                GO TO PMENU.
 
