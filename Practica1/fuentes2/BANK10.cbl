@@ -92,6 +92,9 @@
        77 FECHA-HOY                 PIC   9(8). 
        77 FECHA-PROG                PIC   9(8).
        77 LAST-MOV-NUM              PIC   9(35). 
+       77 SALDO-USUARIO-TOT         PIC   S9(9).
+       77 SALDO-USUARIO-ENT         PIC   S9(9).
+       77 SALDO-USUARIO-DEC         PIC   9(9).
 
        PROCEDURE DIVISION.
        IMPRIMIR-CABECERA.
@@ -101,11 +104,11 @@
 
        PCONSULTA-MOV.
 
-           OPEN INPUT F-MOVIMIENTOS.
+           OPEN I-O F-MOVIMIENTOS.
                IF FSM <> 00
                    GO TO PSYS-ERR.
              
-           OPEN INPUT F-PROGRAMADAS.
+           OPEN I-O F-PROGRAMADAS.
                IF FSM <> 00
                    GO TO PSYS-ERR.
 
@@ -119,7 +122,8 @@
        LECTURA-SALDO.
                IF PROG-VALIDA = 1
                    MOVE 0 TO LAST-MOV-NUM.
-                   READ F-MOVIMIENTOS NEXT RECORD AT END GO ESCRIBIR-TRANSFERENCIA.
+                   READ F-MOVIMIENTOS NEXT RECORD AT END 
+                   GO ESCRIBIR-TRANSFERENCIA.
                    IF MOV-TARJETA = PROG-ORIGEN
                        IF LAST-MOV-NUM < MOV-NUM
                            MOVE MOV-NUM TO LAST-MOV-NUM.
@@ -127,7 +131,52 @@
 
        
        ESCRIBIR-TRANSFERENCIA
+           IF FSP <> 00
+              GO TO PSYS-ERR.
+           MOVE MOV-SALDOPOS-ENT TO SALDO-USUARIO-ENT.
+           MOVE MOV-SALDOPOS-DEC TO SALDO-USUARIO-DEC.   
+           SUBTRACT PROG-IMPORTE-ENT FROM SALDO-USUARIO-ENT.
+           SUBTRACT PROG-IMPORTE-DEC FROM SALDO-USUARIO-DEC.
+           COMPUTE SALDO-USUARIO-TOT = 
+                   (SALDO-USUARIO-ENT) * 100 + SALDO-USUARIO-DEC.
+           IF SALDO-USUARIO-TOT < 0
+               GO TO LEER-PRIMEROS.
            
+           IF MENSUAL = 0
+               *> Eliminar del fichero
+               DELETE F-PROGRAMADAS RECORD.
+           ELSE
+               *> Modificar el mes
+               IF PROG-MES = 12
+                   MOVE 1 TO PROG-MES
+                   ADD  1 TO PROG-ANO
+               ELSE
+                   ADD  1 TO PROG-MES.
+
+
+       ESCRITURA.
+           ADD 1 TO LAST-MOV-NUM.
+
+           MOVE LAST-MOV-NUM            TO MOV-NUM.
+           MOVE PROG-ORIGEN             TO MOV-TARJETA.
+           MOVE ANO                     TO MOV-ANO.
+           MOVE MES                     TO MOV-MES.
+           MOVE DIA                     TO MOV-DIA.
+           MOVE HORAS                   TO MOV-HOR.
+           MOVE MINUTOS                 TO MOV-MIN.
+           MOVE SEGUNDOS                TO MOV-SEG.
+
+        *>    MULTIPLY -1 BY EURENT-USUARIO.
+           MOVE PROG-IMPORTE-ENT           TO MOV-IMPORTE-ENT.
+
+           MOVE PROG-IMPORTE-DEC           TO MOV-IMPORTE-DEC.
+           MOVE "Transferencia programada" TO MOV-CONCEPTO.
+
+           MOVE SALDO-USUARIO-ENT       TO MOV-SALDOPOS-ENT.
+           MOVE SALDO-USUARIO-DEC       TO MOV-SALDOPOS-DEC.
+
+           WRITE MOVIMIENTO-REG INVALID KEY GO TO PSYS-ERR.
+           CLOSE F-MOVIMIENTOS.
 
        WAIT-ORDER.
 
