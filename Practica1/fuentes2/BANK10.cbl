@@ -1,5 +1,5 @@
        IDENTIFICATION DIVISION.
-       PROGRAM-ID. BANK9.
+       PROGRAM-ID. BANK10.
 
        ENVIRONMENT DIVISION.
        CONFIGURATION SECTION.
@@ -91,10 +91,15 @@
        77 PROG-VALIDA               PIC   9(1).
        77 FECHA-HOY                 PIC   9(8). 
        77 FECHA-PROG                PIC   9(8).
-       77 LAST-MOV-NUM              PIC   9(35). 
+       77 LAST-MOV-NUM              PIC   9(35).
+       77 LAST-MOV-NUM-DEST         PIC   9(35).
+       77 LAST-MOV-NUM-GLOBAL       PIC   9(35).
        77 SALDO-USUARIO-TOT         PIC   S9(9).
        77 SALDO-USUARIO-ENT         PIC   S9(9).
        77 SALDO-USUARIO-DEC         PIC   9(9).
+
+       77 DEST-SALDOPOS-ENT         PIC  S9(9).
+       77 DEST-SALDOPOS-DEC         PIC   9(2).
 
        PROCEDURE DIVISION.
        IMPRIMIR-CABECERA.
@@ -109,12 +114,12 @@
                    GO TO PSYS-ERR.
              
            OPEN I-O F-PROGRAMADAS.
-               IF FSM <> 00
+               IF FSP <> 00
                    GO TO PSYS-ERR.
 
 
        LEER-PRIMEROS.
-           READ F-PROGRAMADAS NEXT RECORD AT END GO WAIT-ORDER.
+           READ F-PROGRAMADAS NEXT RECORD AT END GO FIN-PROGRAMADAS.
                *> Registro cargado
                MOVE 1 TO PROG-VALIDA.
 
@@ -122,42 +127,73 @@
        LECTURA-SALDO.
                IF PROG-VALIDA = 1
                    MOVE 0 TO LAST-MOV-NUM.
+                   MOVE 0 TO LAST-MOV-NUM-DEST.
+       BUSQUEDA-MAYOR.
                    READ F-MOVIMIENTOS NEXT RECORD AT END 
                    GO ESCRIBIR-TRANSFERENCIA.
+                   *> Buscamos el número máximo de movimiento del orig.
                    IF MOV-TARJETA = PROG-ORIGEN
                        IF LAST-MOV-NUM < MOV-NUM
-                           MOVE MOV-NUM TO LAST-MOV-NUM.
-                       GO LECTURA-SALDO.
-
+                           MOVE MOV-NUM TO LAST-MOV-NUM    
+                   END-IF.
+                   *> Buscamos el número máximo de movimiento del dest.
+                   IF MOV-TARJETA = PROG-DESTINO
+                       IF LAST-MOV-NUM-DEST < MOV-NUM
+                           MOVE MOV-NUM TO LAST-MOV-NUM-DEST
+                   END-IF.
+                   *> Busqueda del ultimo mov-num.
+                   IF MOV-NUM > LAST-MOV-NUM-GLOBAL
+                       MOVE MOV-NUM TO LAST-MOV-NUM-GLOBAL
+                   GO BUSQUEDA-MAYOR.
        
-       ESCRIBIR-TRANSFERENCIA
+       ESCRIBIR-TRANSFERENCIA.
+
+           *> Es redundante?
            IF FSP <> 00
               GO TO PSYS-ERR.
+
+           *> Señala al ult. movimiento de la cuenta origen.
+           MOVE LAST-MOV-NUM TO MOV-NUM.
+
+           *> Evitamos problemas de no existencia.
+           IF MOV-NUM = 0
+               MOVE 0 TO MOV-SALDOPOS-ENT
+               MOVE 0 TO MOV-SALDOPOS-DEC
+           END-IF.
+
+           *> Saldo-usuario-xxx guarda el saldo de la cuenta origen.
            MOVE MOV-SALDOPOS-ENT TO SALDO-USUARIO-ENT.
            MOVE MOV-SALDOPOS-DEC TO SALDO-USUARIO-DEC.   
            SUBTRACT PROG-IMPORTE-ENT FROM SALDO-USUARIO-ENT.
            SUBTRACT PROG-IMPORTE-DEC FROM SALDO-USUARIO-DEC.
+           *> Saldo(Cuenta_Origen) - cantidad(programada)
            COMPUTE SALDO-USUARIO-TOT = 
                    (SALDO-USUARIO-ENT) * 100 + SALDO-USUARIO-DEC.
+
+           *> Si no hay saldo suficiente -> Dejar la programada ahi.
            IF SALDO-USUARIO-TOT < 0
                GO TO LEER-PRIMEROS.
            
+           *> Comprobacion de transferencia mensual.
            IF MENSUAL = 0
-               *> Eliminar del fichero
-               DELETE F-PROGRAMADAS RECORD.
+               *> Eliminar programada del fichero
+               DELETE F-PROGRAMADAS RECORD
            ELSE
-               *> Modificar el mes
+               *> Modificar el mes (+1)
                IF PROG-MES = 12
                    MOVE 1 TO PROG-MES
                    ADD  1 TO PROG-ANO
                ELSE
-                   ADD  1 TO PROG-MES.
+                   ADD  1 TO PROG-MES
+               *> Reescribimos la programada con el nuevo mes.
+               REWRITE PROGRAMADA-REG INVALID KEY GO TO PSYS-ERR
+           END-IF.
 
+           *> Escribimos transferencia de la cuenta origen.
+       ESCRITURA-ORIGEN.
+           ADD 1 TO LAST-MOV-NUM-GLOBAL.
 
-       ESCRITURA.
-           ADD 1 TO LAST-MOV-NUM.
-
-           MOVE LAST-MOV-NUM            TO MOV-NUM.
+           MOVE LAST-MOV-NUM-GLOBAL     TO MOV-NUM.
            MOVE PROG-ORIGEN             TO MOV-TARJETA.
            MOVE ANO                     TO MOV-ANO.
            MOVE MES                     TO MOV-MES.
@@ -166,141 +202,63 @@
            MOVE MINUTOS                 TO MOV-MIN.
            MOVE SEGUNDOS                TO MOV-SEG.
 
-        *>    MULTIPLY -1 BY EURENT-USUARIO.
+           *> El origen tiene que ser negativo (transfiere)
+           MULTIPLY -1 BY PROG-IMPORTE-ENT.
            MOVE PROG-IMPORTE-ENT           TO MOV-IMPORTE-ENT.
+           MULTIPLY -1 BY PROG-IMPORTE-ENT.
+           MOVE PROG-IMPORTE-DEC           TO MOV-IMPORTE-DEC.
+           MOVE "Transferencia programada" TO MOV-CONCEPTO.
+           MOVE SALDO-USUARIO-ENT       TO MOV-SALDOPOS-ENT.
+           MOVE SALDO-USUARIO-DEC       TO MOV-SALDOPOS-DEC.
+           *> Escritura
+           WRITE MOVIMIENTO-REG INVALID KEY GO TO PSYS-ERR.
 
+           *> Transferencia lista para buscar cuenta destino.
+           *> El máximo movimiento de prog-destino es LAST-MOV-NUM-DEST
+       ESCRITURA-DESTINO.
+           *> Apuntamos al último movimiento de la cuenta de destino.
+           MOVE LAST-MOV-NUM-DEST TO MOV-NUM.
+           *> Evitamos problemas de no existencia.
+           IF MOV-NUM = 0
+               MOVE 0 TO MOV-SALDOPOS-ENT
+               MOVE 0 TO MOV-SALDOPOS-DEC
+           END-IF.
+           *> Calculos de saldo restante.
+           COMPUTE DEST-SALDOPOS-ENT = 
+               PROG-IMPORTE-ENT + MOV-IMPORTE-ENT.
+           COMPUTE DEST-SALDOPOS-DEC = 
+               PROG-IMPORTE-DEC + MOV-IMPORTE-DEC.
+
+           *> Escritura.
+           ADD 1 TO LAST-MOV-NUM-GLOBAL.
+
+           MOVE LAST-MOV-NUM-GLOBAL          TO MOV-NUM.
+           MOVE PROG-DESTINO                 TO MOV-TARJETA.
+           MOVE ANO                          TO MOV-ANO.
+           MOVE MES                          TO MOV-MES.
+           MOVE DIA                          TO MOV-DIA.
+           MOVE HORAS                        TO MOV-HOR.
+           MOVE MINUTOS                      TO MOV-MIN.
+           MOVE SEGUNDOS                     TO MOV-SEG.
+
+           MOVE PROG-IMPORTE-ENT           TO MOV-IMPORTE-ENT.
            MOVE PROG-IMPORTE-DEC           TO MOV-IMPORTE-DEC.
            MOVE "Transferencia programada" TO MOV-CONCEPTO.
 
-           MOVE SALDO-USUARIO-ENT       TO MOV-SALDOPOS-ENT.
-           MOVE SALDO-USUARIO-DEC       TO MOV-SALDOPOS-DEC.
-
+           MOVE DEST-SALDOPOS-ENT       TO MOV-SALDOPOS-ENT.
+           MOVE DEST-SALDOPOS-DEC       TO MOV-SALDOPOS-DEC.
+           *> Escritura
            WRITE MOVIMIENTO-REG INVALID KEY GO TO PSYS-ERR.
+
+           *> Cerramos y volvemos a abrir.
            CLOSE F-MOVIMIENTOS.
 
-       WAIT-ORDER.
+           OPEN I-O F-MOVIMIENTOS.
+               IF FSM <> 00
+                   GO TO PSYS-ERR.
 
-           ACCEPT PRESSED-KEY AT LINE 24 COL 80 ON EXCEPTION 
-
-              IF ESC-PRESSED THEN
-                  CLOSE F-MOVIMIENTOS
-                  EXIT PROGRAM
-              END-IF
-
-              IF PGDN-PRESSED THEN
-                  GO TO FLECHA-ABAJO
-              END-IF
-
-              IF PGUP-PRESSED THEN
-                  GO TO FLECHA-ARRIBA
-              END-IF
-
-           END-ACCEPT.
-
-           GO TO WAIT-ORDER.
-
-       FLECHA-ABAJO.
-           MOVE REGISTROS-EN-PANTALLA(MOV-EN-PANTALLA) TO MOV-NUM.
-           READ F-MOVIMIENTOS INVALID KEY GO WAIT-ORDER.
-           GO TO LEER-VIEJO.
-
-       FLECHA-ARRIBA.
-           MOVE REGISTROS-EN-PANTALLA(1) TO MOV-NUM.
-           READ F-MOVIMIENTOS INVALID KEY GO WAIT-ORDER.
-           GO TO LEER-NUEVO.
-
-       LEER-VIEJO.
-           READ F-MOVIMIENTOS PREVIOUS RECORD
-               AT END GO WAIT-ORDER.
-
-               MOVE 1 TO MOV-VALIDO.
-               PERFORM FILTRADO THRU FILTRADO.
-
-               IF MOV-VALIDO = 1
-                   MOVE 2 TO MOV-VALIDO
-                   GO TO CONTROL-PANTALLA
-               ELSE
-                   GO TO LEER-VIEJO.
-
-       LEER-NUEVO.
-           READ F-MOVIMIENTOS NEXT RECORD
-               AT END GO WAIT-ORDER.
-
-               MOVE 1 TO MOV-VALIDO.
-               PERFORM FILTRADO THRU FILTRADO.
-
-               IF MOV-VALIDO = 1
-                   MOVE 3 TO MOV-VALIDO
-                   GO TO CONTROL-PANTALLA
-               ELSE
-                   GO TO LEER-NUEVO.
-
-       CONTROL-PANTALLA.
-           IF MOV-VALIDO = 2 THEN
-               MOVE 0 TO MOV-VALIDO
-               PERFORM REORDENAR-1 THRU REORDENAR-1
-               GO TO WAIT-ORDER
-           ELSE
-               IF MOV-VALIDO = 3 THEN
-                   MOVE 0 TO MOV-VALIDO
-                   PERFORM REORDENAR-2 THRU REORDENAR-2
-                   GO TO WAIT-ORDER
-               ELSE
-                   GO TO WAIT-ORDER
-               END-IF
-           END-IF.
-
-       REORDENAR-1.
-           MOVE 2 TO CONTADOR.
-           MOVE MOV-EN-PANTALLA TO ITERACIONES.
-           SUBTRACT 1 FROM ITERACIONES.
-
-           PERFORM ITERACIONES TIMES
-               MOVE REGISTROS-EN-PANTALLA(CONTADOR) TO COPIA-MOV
-               SUBTRACT 1 FROM CONTADOR
-               MOVE COPIA-MOV TO REGISTROS-EN-PANTALLA(CONTADOR)
-               ADD 2 TO CONTADOR
-           END-PERFORM.
-
-           MOVE MOV-NUM TO REGISTROS-EN-PANTALLA(MOV-EN-PANTALLA).
-           PERFORM MOSTRAR-TABLA THRU MOSTRAR-TABLA.
-
-           GO TO WAIT-ORDER.
-
-       REORDENAR-2.
-           MOVE MOV-EN-PANTALLA TO CONTADOR.
-           SUBTRACT 1 FROM CONTADOR.
-           MOVE MOV-EN-PANTALLA TO ITERACIONES.
-           SUBTRACT 1 FROM ITERACIONES.
-
-
-           PERFORM ITERACIONES TIMES
-               MOVE REGISTROS-EN-PANTALLA(CONTADOR) TO COPIA-MOV
-               ADD 1 TO CONTADOR
-               MOVE COPIA-MOV TO REGISTROS-EN-PANTALLA(CONTADOR)
-               SUBTRACT 2 FROM CONTADOR
-           END-PERFORM.
-
-           MOVE MOV-NUM TO REGISTROS-EN-PANTALLA(1).
-
-           PERFORM MOSTRAR-TABLA THRU MOSTRAR-TABLA.
-
-           GO TO WAIT-ORDER.
-
-       MOSTRAR-TABLA.
-           MOVE 8 TO LINEA-MOV-ACTUAL.
-           MOVE 1 TO CONTADOR.
-
-           PERFORM MOV-EN-PANTALLA TIMES
-               MOVE REGISTROS-EN-PANTALLA(CONTADOR) TO MOV-NUM
-               PERFORM READ-MOVIMIENTO THRU READ-MOVIMIENTO
-               PERFORM MOSTRAR-MOVIMIENTO THRU MOSTRAR-MOVIMIENTO
-               ADD 1 TO LINEA-MOV-ACTUAL
-               ADD 1 TO CONTADOR
-           END-PERFORM.
-
-       READ-MOVIMIENTO.
-           READ F-MOVIMIENTOS INVALID KEY GO TO PSYS-ERR.
+           *> Volver a leer programadas.
+           GO TO LEER-PRIMEROS.
 
        PSYS-ERR.
            CLOSE F-MOVIMIENTOS.
@@ -321,7 +279,7 @@
            ELSE
                GO TO EXIT-ENTER.
 
-
+       *> Filtrado por fechas
        FILTRADO.
 
            COMPUTE FECHA-HOY = (ANO * 10000)
@@ -336,14 +294,7 @@
                MOVE 1 TO PROG-VALIDA
            ELSE
                MOVE 0 TO PROG-VALIDA.
-
-
-       MOSTRAR-MOVIMIENTO.
-
-           MOVE FUNCTION MOD(LINEA-MOV-ACTUAL, 2)
-               TO MODULO-LIN-ACTUAL.
-
-           IF MODULO-LIN-ACTUAL = 0
-               DISPLAY FILA-MOVIMIENTO-PAR
-           ELSE
-               DISPLAY FILA-MOVIMIENTO-IMPAR.
+       
+       FIN-PROGRAMADAS.
+           CLOSE F-PROGRAMADAS.
+           CLOSE F-MOVIMIENTOS.
