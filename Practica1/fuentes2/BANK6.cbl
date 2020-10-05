@@ -472,6 +472,10 @@
                        AT LINE 15 COL 30.
            DISPLAY "Enter - Aceptar" AT LINE 24 COL 33.
 
+           *> Cerramos los descriptores de ficheros.
+           CLOSE F-MOVIMIENTOS.
+           CLOSE F-PROGRAMADAS.
+
            GO TO EXIT-ENTER.
 
        PSYS-ERR.
