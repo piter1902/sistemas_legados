@@ -20,6 +20,12 @@
            RECORD KEY IS MOV-NUM
            FILE STATUS IS FSM.
 
+           SELECT F-PROGRAMADAS ASSIGN TO DISK
+           ORGANIZATION IS INDEXED
+           ACCESS MODE IS DYNAMIC
+           RECORD KEY IS PROG-NUM
+           FILE STATUS IS FSP.
+
 
        DATA DIVISION.
        FILE SECTION.
@@ -47,10 +53,25 @@
            02 MOV-SALDOPOS-ENT     PIC  S9(9).
            02 MOV-SALDOPOS-DEC     PIC   9(2).
 
+       FD F-PROGRAMADAS
+           LABEL RECORD STANDARD
+           VALUE OF FILE-ID IS "programadas.ubd".
+       01 PROGRAMADA-REG.
+           02 PROG-NUM               PIC  9(35).
+           02 PROG-ORIGEN            PIC  9(16).
+           02 PROG-DESTINO           PIC  9(16).
+           02 PROG-ANO               PIC   9(4).
+           02 PROG-MES               PIC   9(2).
+           02 PROG-DIA               PIC   9(2).
+           02 PROG-IMPORTE-ENT       PIC  S9(7).
+           02 PROG-IMPORTE-DEC       PIC   9(2).  
+           02 MENSUAL                PIC   9(1).  
+
 
        WORKING-STORAGE SECTION.
        77 FST                      PIC   X(2).
        77 FSM                      PIC   X(2).
+       77 FSP                      PIC   X(2).
 
        78 BLACK                  VALUE      0.
        78 BLUE                   VALUE      1.
@@ -102,7 +123,9 @@
        77 DIA-USUARIO             PIC   9(2).
        77 MES-USUARIO             PIC   9(2).
        77 ANO-USUARIO             PIC   9(4).
-       77 MENSUAL                 PIC   X(1).
+       77 MENSUAL-USUARIO         PIC   A(1) VALUE "n".
+
+       77 LAST-PROG-NUM           PIC  9(35).
 
        LINKAGE SECTION.
        77 TNUM                     PIC  9(16).
@@ -121,14 +144,14 @@
                LINE 16 COL 54 PIC S9(7) USING EURENT-USUARIO.
            05 FILLER UNDERLINE
                LINE 16 COL 63 PIC 9(2) USING EURDEC-USUARIO.
-           05 DIA-MIN BLANK ZERO AUTO UNDERLINE
+           05 DIA-MIN AUTO UNDERLINE
                LINE 18 COL 54 PIC 9(2) USING DIA-USUARIO.
-           05 MES-MIN BLANK ZERO AUTO UNDERLINE
+           05 MES-MIN AUTO UNDERLINE
                LINE 18 COL 57 PIC 9(2) USING MES-USUARIO.
-           05 ANO-MIN BLANK ZERO AUTO UNDERLINE
+           05 ANO-MIN AUTO UNDERLINE
                LINE 18 COL 60 PIC 9(4) USING ANO-USUARIO.
            05 FILLER UNDERLINE
-               LINE 20 COL 54 PIC X(1) USING MENSUAL.
+               LINE 20 COL 54 PIC A(1) USING MENSUAL-USUARIO.
 
        01 SALDO-DISPLAY.
            05 FILLER SIGN IS LEADING SEPARATE
@@ -224,6 +247,14 @@
                GO TO INDICAR-CTA-DST
            END-IF.
 
+           *> Verificacion de si es una transferencia programada.
+           IF DIA-USUARIO NOT = 0
+               IF MES-USUARIO NOT = 0
+                   IF ANO-USUARIO NOT = 0
+                       *> Es una transferencia programada
+                       GO TO PROGRAMAR-TRANSFERENCIA.
+
+           *> Es una transferencia corriente.
            COMPUTE CENT-IMPOR-USER = (EURENT-USUARIO * 100)
                                      + EURDEC-USUARIO.
 
@@ -236,6 +267,48 @@
 
            GO TO REALIZAR-TRF-VERIFICACION.
 
+       PROGRAMAR-TRANSFERENCIA.
+
+           OPEN I-O F-PROGRAMADAS.
+               IF FSP <> 00
+                   GO TO PSYS-ERR.
+           
+           *> Buscamos la ultima transferencia programada.
+           MOVE 0 TO LAST-PROG-NUM.
+           READ F-PROGRAMADAS NEXT RECORD AT END GO ESCRIBIR-PROG.
+               IF LAST-PROG-NUM < PROG-NUM
+                   MOVE PROG-NUM TO LAST-PROG-NUM.
+
+       ESCRIBIR-PROG.
+           *> Comprobacion de cuenta correcta
+           PERFORM VERIFICACION-CTA-CORRECTA 
+               THRU VERIFICACION-CTA-CORRECTA.
+           *> Escribimos en el fichero de programadas.
+           ADD 1 TO LAST-PROG-NUM.
+
+           MOVE LAST-PROG-NUM    TO PROG-NUM.
+           MOVE TNUM             TO PROG-ORIGEN.
+           MOVE CUENTA-DESTINO   TO PROG-DESTINO.
+           MOVE ANO-USUARIO      TO PROG-ANO.
+           MOVE MES-USUARIO      TO PROG-MES.
+           MOVE DIA-USUARIO      TO PROG-DIA.
+           MOVE EURENT-USUARIO   TO PROG-IMPORTE-ENT.
+           MOVE EURDEC-USUARIO   TO PROG-IMPORTE-DEC.
+
+           IF MENSUAL-USUARIO IS EQUAL TO "S"
+               MOVE 1 TO MENSUAL.
+
+           IF MENSUAL-USUARIO IS EQUAL TO "s"
+               MOVE 1 TO MENSUAL
+           ELSE
+               MOVE 0 TO MENSUAL.
+
+           *> Escritura en fichero.
+           WRITE PROGRAMADA-REG.
+
+           *> Darle feedback al usuario.
+           GO TO MOSTRAR-RESULTADO-USUARIO.
+
        NO-MOVIMIENTOS.
            DISPLAY "0" AT LINE 10 COL 51.
            DISPLAY "." AT LINE 10 COL 52.
@@ -247,6 +320,9 @@
            DISPLAY "Indique la cantidad a transferir" AT LINE 16 COL 19.
            DISPLAY "," AT LINE 16 COL 61.
            DISPLAY "EUR" AT LINE 16 COL 66.
+           DISPLAY "Programar transferencia: Fecha       /  /"
+                AT LINE 18 COL 19.
+           DISPLAY "Repetir mensualmente? (S/n)" AT LINE 20 COL 19.
 
            ACCEPT FILTRO-CUENTA ON EXCEPTION
            IF ESC-PRESSED THEN
@@ -376,6 +452,24 @@
            DISPLAY "Ordenar transferencia" AT LINE 8 COL 30.
            DISPLAY "Transferencia realizada correctamente!" 
                AT LINE 11 COL 19.
+           DISPLAY "Enter - Aceptar" AT LINE 24 COL 33.
+
+           GO TO EXIT-ENTER.
+
+       MOSTRAR-RESULTADO-USUARIO.
+           PERFORM IMPRIMIR-CABECERA THRU IMPRIMIR-CABECERA.
+
+           DISPLAY "Ordenar transferencia" AT LINE 8 COL 30.
+           DISPLAY "Transferencia realizada correctamente!" 
+               AT LINE 11 COL 19.
+           DISPLAY "Con fecha   /  /" AT LINE 13 COL 30.
+           DISPLAY DIA-USUARIO AT LINE 13 COL 41.
+           DISPLAY MES-USUARIO AT LINE 13 COL 44.
+           DISPLAY ANO-USUARIO AT LINE 13 COL 47.
+           IF MENSUAL-USUARIO IS EQUAL TO "S" OR
+               MENSUAL-USUARIO IS EQUAL TO "s"
+                   DISPLAY "Se repetira mensualmente." 
+                       AT LINE 15 COL 30.
            DISPLAY "Enter - Aceptar" AT LINE 24 COL 33.
 
            GO TO EXIT-ENTER.
