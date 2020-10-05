@@ -99,6 +99,11 @@
        77 MSJ-ORD                  PIC  X(35) VALUE "Transferimos".
        77 MSJ-DST                  PIC  X(35) VALUE "Nos transfieren".
 
+       77 DIA-USUARIO             PIC   9(2).
+       77 MES-USUARIO             PIC   9(2).
+       77 ANO-USUARIO             PIC   9(4).
+       77 MENSUAL                 PIC   X(1).
+
        LINKAGE SECTION.
        77 TNUM                     PIC  9(16).
 
@@ -116,6 +121,14 @@
                LINE 16 COL 54 PIC S9(7) USING EURENT-USUARIO.
            05 FILLER UNDERLINE
                LINE 16 COL 63 PIC 9(2) USING EURDEC-USUARIO.
+           05 DIA-MIN BLANK ZERO AUTO UNDERLINE
+               LINE 18 COL 54 PIC 9(2) USING DIA-USUARIO.
+           05 MES-MIN BLANK ZERO AUTO UNDERLINE
+               LINE 18 COL 57 PIC 9(2) USING MES-USUARIO.
+           05 ANO-MIN BLANK ZERO AUTO UNDERLINE
+               LINE 18 COL 60 PIC 9(4) USING ANO-USUARIO.
+           05 FILLER UNDERLINE
+               LINE 20 COL 54 PIC X(1) USING MENSUAL.
 
        01 SALDO-DISPLAY.
            05 FILLER SIGN IS LEADING SEPARATE
@@ -197,6 +210,9 @@
            DISPLAY "Indique la cantidad a transferir" AT LINE 16 COL 19.
            DISPLAY "." AT LINE 16 COL 62.
            DISPLAY "EUR" AT LINE 16 COL 66.
+           DISPLAY "Programar transferencia: Fecha       /  /"
+                AT LINE 18 COL 19.
+           DISPLAY "Repetir mensualmente? (S/n)" AT LINE 20 COL 19.
 
            COMPUTE CENT-SALDO-ORD-USER = (MOV-SALDOPOS-ENT * 100)
                                          + MOV-SALDOPOS-DEC.

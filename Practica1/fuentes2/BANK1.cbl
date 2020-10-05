@@ -88,8 +88,10 @@
 
 
        PROCEDURE DIVISION.
-       
        IMPRIMIR-CABECERA.
+
+           CALL "PROG".
+
            SET ENVIRONMENT 'COB_SCREEN_EXCEPTIONS' TO 'Y'
            SET ENVIRONMENT 'COB_SCREEN_ESC'        TO 'Y'
 
