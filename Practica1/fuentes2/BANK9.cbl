@@ -14,6 +14,12 @@
            RECORD KEY IS MOV-NUM
            FILE STATUS IS FSM.
 
+           SELECT F-PROGRAMADAS ASSIGN TO DISK
+           ORGANIZATION IS INDEXED
+           ACCESS MODE IS DYNAMIC
+           RECORD KEY IS PROG-NUM
+           FILE STATUS IS FSP.
+
 
        DATA DIVISION.
        FILE SECTION.
@@ -35,9 +41,25 @@
            02 MOV-SALDOPOS-ENT      PIC  S9(9).
            02 MOV-SALDOPOS-DEC      PIC   9(2).
 
+       FD F-PROGRAMADAS
+           LABEL RECORD STANDARD
+           VALUE OF FILE-ID IS "programadas.ubd".
+       01 PROGRAMADA-REG.
+           02 PROG-NUM               PIC  9(35).
+           02 PROG-ORIGEN            PIC  9(16).
+           02 PROG-DESTINO           PIC  9(16).
+           02 PROG-ANO               PIC   9(4).
+           02 PROG-MES               PIC   9(2).
+           02 PROG-DIA               PIC   9(2).
+           02 PROG-IMPORTE-ENT       PIC  S9(7).
+           02 PROG-IMPORTE-DEC       PIC   9(2).  
+           02 MENSUAL                PIC   9(1).  
+
 
        WORKING-STORAGE SECTION.
        77 FSM                       PIC   X(2).
+       77 FSP                       PIC   X(2).
+
 
        78 BLACK                     VALUE    0.
        78 BLUE                      VALUE    1.
@@ -75,11 +97,6 @@
        77 DIA2-USUARIO              PIC   9(2).
        77 MES2-USUARIO              PIC   9(2).
        77 ANO2-USUARIO              PIC   9(4).
-
-       77 EURENT1-USUARIO           PIC  S9(7).
-       77 EURDEC1-USUARIO           PIC   9(2).
-       77 EURENT2-USUARIO           PIC  S9(7).
-       77 EURDEC2-USUARIO           PIC   9(2).
 
        77 FECHA-MIN                 PIC   9(8).
        77 FECHA-MOV                 PIC   9(8).
@@ -121,16 +138,6 @@
                LINE 13 COL 53 PIC 9(2) USING MES2-USUARIO.
            05 ANO-MAX BLANK ZERO AUTO UNDERLINE
                LINE 13 COL 56 PIC 9(4) USING ANO2-USUARIO.
-           05 EUR-ENT-MIN AUTO UNDERLINE
-               SIGN IS LEADING SEPARATE
-               LINE 15 COL 30 PIC S9(7) USING EURENT1-USUARIO.
-           05 EUR-DEC-MIN AUTO UNDERLINE
-               LINE 15 COL 39 PIC 9(2) USING EURDEC1-USUARIO.
-           05 EUR-ENT-MAX AUTO UNDERLINE
-               SIGN IS LEADING SEPARATE
-               LINE 15 COL 48 PIC S9(7) USING EURENT2-USUARIO.
-           05 EUR-DEC-MAX UNDERLINE
-               LINE 15 COL 57 PIC 9(2) USING EURDEC2-USUARIO.
 
        01 FILA-MOVIMIENTO-PAR.
 
@@ -247,14 +254,9 @@
            INITIALIZE MES2-USUARIO.
            INITIALIZE ANO2-USUARIO.
 
-           INITIALIZE EURENT1-USUARIO.
-           INITIALIZE EURDEC1-USUARIO.
-           INITIALIZE EURENT2-USUARIO.
-           INITIALIZE EURDEC2-USUARIO.
-
-           DISPLAY "Se  mostraran los ultimos movimientos," 
-               AT LINE 8 COL 8.
-           DISPLAY "de mas a menos recientes" AT LINE 8 COL 47.
+           DISPLAY "Se  mostraran las ultimas transferencias," 
+               AT LINE 8 COL 6.
+           DISPLAY "de mas a menos recientes" AT LINE 8 COL 48.
 
            DISPLAY "Alternativamente, indique un intervalo" 
                AT LINE 10 COL 8.
@@ -262,8 +264,6 @@
 
            DISPLAY "Entre las fechas   /  /     y   /  /    " 
                AT LINE 13 COL 20.
-           DISPLAY "Cantidad entre         .   EUR y         .   EUR"
-               AT LINE 15 COL 15.
 
            DISPLAY "Enter - Aceptar" AT LINE 24 COL 01.
            DISPLAY "ESC - Cancelar" AT LINE 24 COL 65.
@@ -280,15 +280,6 @@
                        MOVE 99   TO DIA2-USUARIO
                        MOVE 99   TO MES2-USUARIO
                        MOVE 9999 TO ANO2-USUARIO.
-
-           IF EURENT2-USUARIO = 0
-               IF EURDEC2-USUARIO = 0
-                   IF EURENT1-USUARIO = 0
-                       IF EURDEC1-USUARIO = 0
-                           MOVE 9999999  TO EURENT2-USUARIO
-                           MOVE 99       TO EURDEC2-USUARIO
-                           MOVE -9999999  TO EURENT1-USUARIO
-                           MOVE 99        TO EURDEC1-USUARIO.
 
            PERFORM IMPRIMIR-CABECERA THRU IMPRIMIR-CABECERA.
 
@@ -500,20 +491,6 @@
            IF FECHA-MIN > FECHA-MOV
                MOVE 0 TO MOV-VALIDO.
            IF FECHA-MAX < FECHA-MOV
-               MOVE 0 TO MOV-VALIDO.
-
-           COMPUTE CENT-MIN = (EURENT1-USUARIO * 100)
-                              + (EURDEC1-USUARIO).
-
-           COMPUTE CENT-MOV = (MOV-IMPORTE-ENT * 100)
-                              + (MOV-IMPORTE-DEC).
-
-           COMPUTE CENT-MAX = (EURENT2-USUARIO * 100)
-                              + (EURDEC2-USUARIO).
-
-           IF CENT-MIN > CENT-MOV
-               MOVE 0 TO MOV-VALIDO.
-           IF CENT-MAX < CENT-MOV
                MOVE 0 TO MOV-VALIDO.
 
 
