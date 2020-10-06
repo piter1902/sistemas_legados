@@ -237,8 +237,8 @@
            MOVE PROG-IMPORTE-ENT           TO MOV-IMPORTE-ENT.
            MULTIPLY -1 BY PROG-IMPORTE-ENT.
            MOVE PROG-IMPORTE-DEC           TO MOV-IMPORTE-DEC.
-        *>    MOVE "Transferencia programada" TO MOV-CONCEPTO.
-           MOVE LAST-MOV-NUM-GLOBAL               TO MOV-CONCEPTO.
+           MOVE "Transferencia programada" TO MOV-CONCEPTO.
+        *>    MOVE LAST-MOV-NUM-GLOBAL               TO MOV-CONCEPTO.
            
            MOVE SALDO-USUARIO-ENT       TO MOV-SALDOPOS-ENT.
            MOVE SALDO-USUARIO-DEC       TO MOV-SALDOPOS-DEC.
@@ -289,8 +289,8 @@
 
            MOVE PROG-IMPORTE-ENT           TO MOV-IMPORTE-ENT.
            MOVE PROG-IMPORTE-DEC           TO MOV-IMPORTE-DEC.
-           *>    MOVE "Transferencia programada" TO MOV-CONCEPTO.
-           MOVE  LAST-MOV-NUM-GLOBAL       TO MOV-CONCEPTO.
+           MOVE "Transferencia programada" TO MOV-CONCEPTO.
+        *>    MOVE  LAST-MOV-NUM-GLOBAL       TO MOV-CONCEPTO.
 
            MOVE DEST-SALDOPOS-ENT       TO MOV-SALDOPOS-ENT.
            MOVE DEST-SALDOPOS-DEC       TO MOV-SALDOPOS-DEC.
