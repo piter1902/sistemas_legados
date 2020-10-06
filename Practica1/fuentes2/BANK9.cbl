@@ -223,6 +223,92 @@
            05 MOV-SALDOPOS-DEC-IMPAR LINE LINEA-MOV-ACTUAL COL 78
                PIC 99 FROM MOV-SALDOPOS-DEC.
 
+       01 FILA-PROGRAMADA-PAR.
+
+           05 MOV-DIA-PAR LINE LINEA-MOV-ACTUAL COL 02
+               FOREGROUND-COLOR YELLOW PIC 99 FROM PROG-DIA.
+           05 SEPARADOR-PAR-1 LINE LINEA-MOV-ACTUAL COL 04
+               FOREGROUND-COLOR YELLOW PIC A FROM "-".
+           05 MOV-MES-PAR LINE LINEA-MOV-ACTUAL COL 05
+               FOREGROUND-COLOR YELLOW PIC 99 FROM PROG-MES.
+           05 SEPARADOR-PAR-2 LINE LINEA-MOV-ACTUAL COL 07
+               FOREGROUND-COLOR YELLOW PIC A FROM "-".
+           05 MOV-ANO-PAR LINE LINEA-MOV-ACTUAL COL 08
+               FOREGROUND-COLOR YELLOW PIC 9(4) FROM PROG-ANO.
+           05 MOV-HOR-PAR LINE LINEA-MOV-ACTUAL COL 13
+               FOREGROUND-COLOR YELLOW PIC 99 FROM "00".
+           05 SEPARADOR-PAR-3 LINE LINEA-MOV-ACTUAL COL 15
+               FOREGROUND-COLOR YELLOW PIC A FROM ":".
+           05 MOV-MIN-PAR LINE LINEA-MOV-ACTUAL COL 16
+               FOREGROUND-COLOR YELLOW PIC 99 FROM "00".
+           05 SEPARADOR-PAR-4 LINE LINEA-MOV-ACTUAL COL 18
+               FOREGROUND-COLOR YELLOW PIC A FROM "|".
+           05 MOV-CONCEPTO-PAR LINE LINEA-MOV-ACTUAL COL 19
+               FOREGROUND-COLOR YELLOW PIC X(35) 
+               FROM "Transferencia programada".
+           05 SEPARADOR-5-PAR LINE LINEA-MOV-ACTUAL COL 54
+               FOREGROUND-COLOR YELLOW PIC A FROM "|".
+           05 MOV-IMPORTE-ENT-PAR SIGN IS LEADING SEPARATE
+               LINE LINEA-MOV-ACTUAL COL 55
+               FOREGROUND-COLOR YELLOW PIC S9(7) FROM PROG-IMPORTE-ENT.
+           05 SEPARADOR-6-PAR LINE LINEA-MOV-ACTUAL COL 63
+               FOREGROUND-COLOR YELLOW PIC A FROM ",".
+           05 MOV-IMPORTE-DEC-PAR LINE LINEA-MOV-ACTUAL COL 64
+               FOREGROUND-COLOR YELLOW PIC 99 FROM PROG-IMPORTE-DEC.
+           05 SEPARADOR-7-PAR LINE LINEA-MOV-ACTUAL COL 66
+               FOREGROUND-COLOR YELLOW PIC A FROM "|".
+           05 MOV-SALDOPOS-ENT-PAR SIGN IS LEADING SEPARATE
+               LINE LINEA-MOV-ACTUAL COL 67
+               FOREGROUND-COLOR YELLOW PIC S9(9)
+               FROM "".
+           05 SEPARADOR-8-PAR LINE LINEA-MOV-ACTUAL COL 77
+               FOREGROUND-COLOR YELLOW PIC A FROM ",".
+           05 MOV-SALDOPOS-DEC-PAR LINE LINEA-MOV-ACTUAL COL 78
+               FOREGROUND-COLOR YELLOW PIC 99 FROM "".
+
+       01 FILA-PROGRAMADA-IMPAR.
+           05 MOV-DIA-IMPAR LINE LINEA-MOV-ACTUAL COL 02
+               PIC 99 FROM PROG-DIA.
+           05 SEPARADOR-IMPAR-1 LINE LINEA-MOV-ACTUAL COL 04
+               PIC A FROM "-".
+           05 MOV-MES-IMPAR LINE LINEA-MOV-ACTUAL COL 05
+               PIC 99 FROM PROG-MES.
+           05 SEPARADOR-IMPAR-2 LINE LINEA-MOV-ACTUAL COL 07
+               PIC A FROM "-".
+           05 MOV-ANO-IMPAR LINE LINEA-MOV-ACTUAL COL 08
+               PIC 9(4) FROM PROG-ANO.
+           05 MOV-HOR-IMPAR LINE LINEA-MOV-ACTUAL COL 13
+               PIC 99 FROM "00".
+           05 SEPARADOR-IMPAR-3 LINE LINEA-MOV-ACTUAL COL 15
+               PIC A FROM ":".
+           05 MOV-MIN-IMPAR LINE LINEA-MOV-ACTUAL COL 16
+               PIC 99 FROM "00".
+           05 SEPARADOR-IMPAR-4 LINE LINEA-MOV-ACTUAL COL 18
+               PIC A FROM "|".
+           05 MOV-CONCEPTO-IMPAR LINE LINEA-MOV-ACTUAL COL 19
+               PIC X(35) FROM "Transferencia programada".
+           05 SEPARADOR-5-IMPAR LINE LINEA-MOV-ACTUAL COL 54
+               PIC A FROM "|".
+           05 MOV-IMPORTE-ENT-IMPAR
+               SIGN IS LEADING SEPARATE
+               LINE LINEA-MOV-ACTUAL COL 55
+               PIC S9(7) FROM PROG-IMPORTE-ENT.
+           05 SEPARADOR-6-IMPAR LINE LINEA-MOV-ACTUAL COL 63
+               PIC A FROM ",".
+           05 MOV-IMPORTE-DEC-IMPAR LINE LINEA-MOV-ACTUAL COL 64
+               PIC 99 FROM PROG-IMPORTE-DEC.
+           05 SEPARADOR-7-IMPAR LINE LINEA-MOV-ACTUAL COL 66
+               PIC A FROM "|".
+           05 MOV-SALDOPOS-ENT-IMPAR
+               SIGN IS LEADING SEPARATE
+               LINE LINEA-MOV-ACTUAL COL 67
+               PIC S9(9) FROM "".
+           05 SEPARADOR-8-IMPAR LINE LINEA-MOV-ACTUAL COL 77
+               PIC A FROM ",".
+           05 MOV-SALDOPOS-DEC-IMPAR LINE LINEA-MOV-ACTUAL COL 78
+               PIC 99 FROM "".
+
+
 
        PROCEDURE DIVISION USING TNUM.
        IMPRIMIR-CABECERA.
@@ -287,9 +373,19 @@
                IF FSM <> 00
                    GO TO PSYS-ERR.
 
+           *> Cerramos el fichero para evitar el error 41 (file is open)
+           CLOSE F-PROGRAMADAS.
+           OPEN INPUT F-PROGRAMADAS.
+               IF FSP <> 00
+                   GO TO PSYS-ERR.
+
        POSICIONAR-FINAL.
-           READ F-MOVIMIENTOS NEXT RECORD AT END GO PLECTURA-MOV.
+           READ F-MOVIMIENTOS NEXT RECORD AT END GO POSICIONAR-FINAL-2.
                GO TO POSICIONAR-FINAL.
+
+       POSICIONAR-FINAL-2.
+           READ F-PROGRAMADAS NEXT RECORD AT END GO PLECTURA-MOV.
+               GO TO POSICIONAR-FINAL-2.
 
        PLECTURA-MOV.
            DISPLAY "FECHA" AT LINE 7 COL 8.
@@ -307,8 +403,29 @@
            MOVE 0 TO MOV-EN-PANTALLA.
            MOVE 7 TO LINEA-MOV-ACTUAL.
 
-
+       
        LEER-PRIMEROS.
+           READ F-PROGRAMADAS PREVIOUS RECORD AT END GO LEER-PRIMEROS-2.
+               MOVE 1 TO MOV-VALIDO.
+
+               PERFORM FILTRADO-2 THRU FILTRADO-2.
+
+               IF MOV-VALIDO = 1
+                   ADD 1 TO LINEA-MOV-ACTUAL
+                   ADD 1 TO MOV-EN-PANTALLA
+                   MOVE MOV-NUM TO
+                       REGISTROS-EN-PANTALLA(MOV-EN-PANTALLA)
+                   MOVE 0 TO MOV-VALIDO
+                   *> Mostramos la transferencia
+                   PERFORM MOSTRAR-PROGRAMADA THRU MOSTRAR-PROGRAMADA.
+
+               IF MOV-EN-PANTALLA = 15
+                   GO TO WAIT-ORDER.
+
+               GO TO LEER-PRIMEROS.
+       
+
+       LEER-PRIMEROS-2.
            READ F-MOVIMIENTOS PREVIOUS RECORD AT END GO WAIT-ORDER.
                MOVE 1 TO MOV-VALIDO.
 
@@ -325,7 +442,7 @@
                IF MOV-EN-PANTALLA = 15
                    GO TO WAIT-ORDER.
 
-               GO TO LEER-PRIMEROS.
+               GO TO LEER-PRIMEROS-2.
 
        WAIT-ORDER.
 
@@ -333,6 +450,7 @@
 
               IF ESC-PRESSED THEN
                   CLOSE F-MOVIMIENTOS
+                  CLOSE F-PROGRAMADAS
                   EXIT PROGRAM
               END-IF
 
@@ -463,6 +581,9 @@
                     BACKGROUND-COLOR IS RED.
            DISPLAY "Enter - Aceptar" AT LINE 24 COL 33.
 
+           DISPLAY FSP AT LINE 13 COL 30.
+           DISPLAY FSM AT LINE 14 COL 30.
+
        EXIT-ENTER.
            ACCEPT PRESSED-KEY AT LINE 24 COL 80
            IF ENTER-PRESSED
@@ -501,6 +622,32 @@
            ELSE 
                MOVE 0 TO MOV-VALIDO.
 
+       *> Filtro por transferencia (fecha)
+       FILTRADO-2.
+
+           *> Se comprueba la fecha (dentro del intervalo) y la cuenta.
+           IF TNUM NOT = PROG-ORIGEN
+               MOVE 0 TO MOV-VALIDO.
+
+           COMPUTE FECHA-MIN = (ANO1-USUARIO * 10000)
+                               + (MES1-USUARIO * 100)
+                               + DIA1-USUARIO.
+
+           COMPUTE FECHA-MOV = (PROG-ANO * 10000)
+                               + (PROG-MES * 100)
+                               + PROG-DIA.
+
+           COMPUTE FECHA-MAX = (ANO2-USUARIO * 10000)
+                               + (MES2-USUARIO * 100)
+                               + DIA2-USUARIO.
+
+           IF FECHA-MIN > FECHA-MOV
+               MOVE 0 TO MOV-VALIDO.
+           IF FECHA-MAX < FECHA-MOV
+               MOVE 0 TO MOV-VALIDO.
+
+
+
        MOSTRAR-MOVIMIENTO.
 
            MOVE FUNCTION MOD(LINEA-MOV-ACTUAL, 2)
@@ -510,3 +657,13 @@
                DISPLAY FILA-MOVIMIENTO-PAR
            ELSE
                DISPLAY FILA-MOVIMIENTO-IMPAR.
+
+       MOSTRAR-PROGRAMADA.
+
+           MOVE FUNCTION MOD(LINEA-MOV-ACTUAL, 2)
+               TO MODULO-LIN-ACTUAL.
+
+           IF MODULO-LIN-ACTUAL = 0
+               DISPLAY FILA-PROGRAMADA-PAR
+           ELSE
+               DISPLAY FILA-PROGRAMADA-IMPAR.
