@@ -93,6 +93,7 @@
        77 FECHA-PROG                PIC   9(8).
        77 LAST-MOV-NUM              PIC   9(35).
        77 LAST-MOV-NUM-DEST         PIC   9(35).
+       77 PUNTERO                   PIC   9(35).
        77 LAST-MOV-NUM-GLOBAL       PIC   9(35).
        77 SALDO-USUARIO-TOT         PIC   S9(9).
        77 SALDO-USUARIO-ENT         PIC   S9(9).
@@ -100,10 +101,17 @@
 
        77 DEST-SALDOPOS-ENT         PIC  S9(9).
        77 DEST-SALDOPOS-DEC         PIC   9(2).
+       77 INCREMENTO                PIC   9(35).
+       
+       SCREEN SECTION.
+       01 BLANK-SCREEN.
+           05 FILLER LINE 1 BLANK SCREEN BACKGROUND-COLOR BLACK.
 
        PROCEDURE DIVISION.
        IMPRIMIR-CABECERA.
-
+           INITIALIZE LAST-MOV-NUM.
+           INITIALIZE LAST-MOV-NUM-DEST.
+           INITIALIZE LAST-MOV-NUM-GLOBAL.
            MOVE FUNCTION CURRENT-DATE TO CAMPOS-FECHA.
 
 
@@ -122,18 +130,30 @@
            READ F-PROGRAMADAS NEXT RECORD AT END GO FIN-PROGRAMADAS.
                *> Registro cargado
                MOVE 1 TO PROG-VALIDA.
+               *> Se reinicia valor para evitar problemas
 
                PERFORM FILTRADO THRU FILTRADO.
        LECTURA-SALDO.
-               IF PROG-VALIDA = 1
-                   MOVE 0 TO LAST-MOV-NUM.
-                   MOVE 0 TO LAST-MOV-NUM-DEST.
+               *> Si no es válida, seguimos con siguiente programada
+               IF PROG-VALIDA = 0
+                   GO TO LEER-PRIMEROS.
+
+                MOVE 0 TO LAST-MOV-NUM.
+                MOVE 0 TO LAST-MOV-NUM-DEST.
+                MOVE 0 TO LAST-MOV-NUM-GLOBAL.
+                MOVE 0 TO MOV-NUM.
+                MOVE 0 TO INCREMENTO.
+                CLOSE F-MOVIMIENTOS.
+                OPEN I-O F-MOVIMIENTOS.
+                IF FSM <> 00
+                   GO TO PSYS-ERR.
        BUSQUEDA-MAYOR.
                    READ F-MOVIMIENTOS NEXT RECORD AT END 
                    GO ESCRIBIR-TRANSFERENCIA.
                    *> Buscamos el número máximo de movimiento del orig.
                    IF MOV-TARJETA = PROG-ORIGEN
                        IF LAST-MOV-NUM < MOV-NUM
+                           ADD 1 TO INCREMENTO
                            MOVE MOV-NUM TO LAST-MOV-NUM    
                    END-IF.
                    *> Buscamos el número máximo de movimiento del dest.
@@ -149,12 +169,22 @@
        ESCRIBIR-TRANSFERENCIA.
 
            *> Es redundante?
-           IF FSP <> 00
-              GO TO PSYS-ERR.
+        *>    IF FSP <> 00
+        *>       GO TO PSYS-ERR.
 
            *> Señala al ult. movimiento de la cuenta origen.
-           MOVE LAST-MOV-NUM TO MOV-NUM.
-
+           MOVE LAST-MOV-NUM TO PUNTERO.
+           *> Apuntamos al sitio de movimientos que se desea
+           CLOSE F-MOVIMIENTOS.
+           OPEN I-O F-MOVIMIENTOS.
+               IF FSM <> 00
+                   GO TO PSYS-ERR.
+       APUNTAR-BUCLE.
+           READ F-MOVIMIENTOS NEXT RECORD AT END GO TO APUNTAR-FIN.
+           IF MOV-NUM NOT = PUNTERO
+               GO TO APUNTAR-BUCLE.
+       
+       APUNTAR-FIN.
            *> Evitamos problemas de no existencia.
            IF MOV-NUM = 0
                MOVE 0 TO MOV-SALDOPOS-ENT
@@ -173,11 +203,11 @@
            *> Si no hay saldo suficiente -> Dejar la programada ahi.
            IF SALDO-USUARIO-TOT < 0
                GO TO LEER-PRIMEROS.
-           
+               
            *> Comprobacion de transferencia mensual.
            IF MENSUAL = 0
                *> Eliminar programada del fichero
-               DELETE F-PROGRAMADAS RECORD
+               DELETE F-PROGRAMADAS RECORD INVALID KEY GO TO PSYS-ERR
            ELSE
                *> Modificar el mes (+1)
                IF PROG-MES = 12
@@ -207,7 +237,9 @@
            MOVE PROG-IMPORTE-ENT           TO MOV-IMPORTE-ENT.
            MULTIPLY -1 BY PROG-IMPORTE-ENT.
            MOVE PROG-IMPORTE-DEC           TO MOV-IMPORTE-DEC.
-           MOVE "Transferencia programada" TO MOV-CONCEPTO.
+        *>    MOVE "Transferencia programada" TO MOV-CONCEPTO.
+           MOVE LAST-MOV-NUM-GLOBAL               TO MOV-CONCEPTO.
+           
            MOVE SALDO-USUARIO-ENT       TO MOV-SALDOPOS-ENT.
            MOVE SALDO-USUARIO-DEC       TO MOV-SALDOPOS-DEC.
            *> Escritura
@@ -216,18 +248,32 @@
            *> Transferencia lista para buscar cuenta destino.
            *> El máximo movimiento de prog-destino es LAST-MOV-NUM-DEST
        ESCRITURA-DESTINO.
-           *> Apuntamos al último movimiento de la cuenta de destino.
-           MOVE LAST-MOV-NUM-DEST TO MOV-NUM.
+
+           *> Señala al ult. movimiento de la cuenta origen.
+           MOVE LAST-MOV-NUM TO PUNTERO.
+           *> Apuntamos al sitio de movimientos que se desea
+           CLOSE F-MOVIMIENTOS.
+           OPEN I-O F-MOVIMIENTOS.
+               IF FSM <> 00
+                   GO TO PSYS-ERR.
+       APUNTAR-BUCLE2.
+           READ F-MOVIMIENTOS NEXT RECORD AT END GO TO APUNTAR-FIN2.
+           IF MOV-NUM NOT = PUNTERO
+               GO TO APUNTAR-BUCLE2.
+       
+       APUNTAR-FIN2.
            *> Evitamos problemas de no existencia.
            IF MOV-NUM = 0
                MOVE 0 TO MOV-SALDOPOS-ENT
                MOVE 0 TO MOV-SALDOPOS-DEC
            END-IF.
            *> Calculos de saldo restante.
+           MOVE 0 TO DEST-SALDOPOS-ENT
+           MOVE 0 TO DEST-SALDOPOS-DEC
            COMPUTE DEST-SALDOPOS-ENT = 
-               PROG-IMPORTE-ENT + MOV-IMPORTE-ENT.
+               PROG-IMPORTE-ENT + MOV-SALDOPOS-ENT.
            COMPUTE DEST-SALDOPOS-DEC = 
-               PROG-IMPORTE-DEC + MOV-IMPORTE-DEC.
+               PROG-IMPORTE-DEC + MOV-SALDOPOS-DEC.
 
            *> Escritura.
            ADD 1 TO LAST-MOV-NUM-GLOBAL.
@@ -243,7 +289,8 @@
 
            MOVE PROG-IMPORTE-ENT           TO MOV-IMPORTE-ENT.
            MOVE PROG-IMPORTE-DEC           TO MOV-IMPORTE-DEC.
-           MOVE "Transferencia programada" TO MOV-CONCEPTO.
+           *>    MOVE "Transferencia programada" TO MOV-CONCEPTO.
+           MOVE  LAST-MOV-NUM-GLOBAL       TO MOV-CONCEPTO.
 
            MOVE DEST-SALDOPOS-ENT       TO MOV-SALDOPOS-ENT.
            MOVE DEST-SALDOPOS-DEC       TO MOV-SALDOPOS-DEC.
@@ -251,19 +298,20 @@
            WRITE MOVIMIENTO-REG INVALID KEY GO TO PSYS-ERR.
 
            *> Cerramos y volvemos a abrir.
-           CLOSE F-MOVIMIENTOS.
+        *>    CLOSE F-MOVIMIENTOS.
 
-           OPEN I-O F-MOVIMIENTOS.
-               IF FSM <> 00
-                   GO TO PSYS-ERR.
+        *>    OPEN I-O F-MOVIMIENTOS.
+        *>        IF FSM <> 00
+        *>            GO TO PSYS-ERR.
 
            *> Volver a leer programadas.
            GO TO LEER-PRIMEROS.
 
        PSYS-ERR.
-           CLOSE F-MOVIMIENTOS.
+           DISPLAY BLANK-SCREEN.
 
            PERFORM IMPRIMIR-CABECERA THRU IMPRIMIR-CABECERA.
+           CLOSE F-MOVIMIENTOS.
            DISPLAY "Ha ocurrido un error interno" AT LINE 9 COL 25
                WITH FOREGROUND-COLOR IS WHITE
                     BACKGROUND-COLOR IS RED.
@@ -272,6 +320,18 @@
                     BACKGROUND-COLOR IS RED.
            DISPLAY "Enter - Aceptar" AT LINE 24 COL 33.
 
+        *>    DISPLAY MOV-NUM             AT LINE 13 COL 30.
+
+        *>    DISPLAY MOV-TARJETA         AT LINE 15 COL 30.
+
+        *>    DISPLAY MOV-SALDOPOS-ENT    AT LINE 17 COL 30.
+
+        *>    DISPLAY LAST-MOV-NUM        AT LINE 19 COL 30.
+
+        *>    DISPLAY INCREMENTO          AT LINE 21 COL 30.
+
+        *>    DISPLAY PROG-ORIGEN         AT LINE 23 COL 30.
+           
        EXIT-ENTER.
            ACCEPT PRESSED-KEY AT LINE 24 COL 80
            IF ENTER-PRESSED
@@ -294,7 +354,7 @@
                MOVE 1 TO PROG-VALIDA
            ELSE
                MOVE 0 TO PROG-VALIDA.
-       
+
        FIN-PROGRAMADAS.
            CLOSE F-PROGRAMADAS.
            CLOSE F-MOVIMIENTOS.
