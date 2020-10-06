@@ -470,7 +470,7 @@
            ELSE
                GO TO EXIT-ENTER.
 
-
+       *> Filtro por tipo de movimiento
        FILTRADO.
 
            IF TNUM NOT = MOV-TARJETA
@@ -493,6 +493,13 @@
            IF FECHA-MAX < FECHA-MOV
                MOVE 0 TO MOV-VALIDO.
 
+           *> Comprobamos que el movimiento es una transferencia.
+           IF MOV-CONCEPTO IS EQUAL TO "Transferimos" 
+               OR MOV-CONCEPTO IS EQUAL TO "Nos transfieren"
+               OR MOV-CONCEPTO IS EQUAL TO "Transferencia programada"
+                   MOVE 1 TO MOV-VALIDO
+           ELSE 
+               MOVE 0 TO MOV-VALIDO.
 
        MOSTRAR-MOVIMIENTO.
 
