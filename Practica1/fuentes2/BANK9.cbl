@@ -614,13 +614,14 @@
            IF FECHA-MAX < FECHA-MOV
                MOVE 0 TO MOV-VALIDO.
 
-           *> Comprobamos que el movimiento es una transferencia.
-           IF MOV-CONCEPTO IS EQUAL TO "Transferimos" 
-               OR MOV-CONCEPTO IS EQUAL TO "Nos transfieren"
-               OR MOV-CONCEPTO IS EQUAL TO "Transferencia programada"
-                   MOVE 1 TO MOV-VALIDO
-           ELSE 
-               MOVE 0 TO MOV-VALIDO.
+           IF MOV-VALIDO NOT = 0
+               *> Comprobamos que el movimiento es una transferencia.
+               IF MOV-CONCEPTO IS EQUAL TO "Transferimos" 
+                  OR MOV-CONCEPTO IS EQUAL TO "Nos transfieren"
+                  OR MOV-CONCEPTO IS EQUAL TO "Transferencia programada"
+                       MOVE 1 TO MOV-VALIDO
+               ELSE 
+                   MOVE 0 TO MOV-VALIDO.
 
        *> Filtro por transferencia (fecha)
        FILTRADO-2.

@@ -180,13 +180,15 @@
                IF FSM <> 00
                    GO TO PSYS-ERR.
        APUNTAR-BUCLE.
+           IF PUNTERO = 0
+               GO TO APUNTAR-FIN.
            READ F-MOVIMIENTOS NEXT RECORD AT END GO TO APUNTAR-FIN.
            IF MOV-NUM NOT = PUNTERO
                GO TO APUNTAR-BUCLE.
        
        APUNTAR-FIN.
            *> Evitamos problemas de no existencia.
-           IF MOV-NUM = 0
+           IF PUNTERO = 0
                MOVE 0 TO MOV-SALDOPOS-ENT
                MOVE 0 TO MOV-SALDOPOS-DEC
            END-IF.
@@ -249,31 +251,37 @@
            *> El máximo movimiento de prog-destino es LAST-MOV-NUM-DEST
        ESCRITURA-DESTINO.
 
-           *> Señala al ult. movimiento de la cuenta origen.
-           MOVE LAST-MOV-NUM TO PUNTERO.
+           *> Señala al ult. movimiento de la cuenta destino.
+           MOVE LAST-MOV-NUM-DEST TO PUNTERO.
            *> Apuntamos al sitio de movimientos que se desea
            CLOSE F-MOVIMIENTOS.
            OPEN I-O F-MOVIMIENTOS.
                IF FSM <> 00
                    GO TO PSYS-ERR.
        APUNTAR-BUCLE2.
+           *> La cuenta de destino no esta inicializada.
+           IF PUNTERO = 0
+               GO TO APUNTAR-FIN2.
            READ F-MOVIMIENTOS NEXT RECORD AT END GO TO APUNTAR-FIN2.
            IF MOV-NUM NOT = PUNTERO
                GO TO APUNTAR-BUCLE2.
        
        APUNTAR-FIN2.
            *> Evitamos problemas de no existencia.
-           IF MOV-NUM = 0
+           IF PUNTERO = 0
                MOVE 0 TO MOV-SALDOPOS-ENT
                MOVE 0 TO MOV-SALDOPOS-DEC
            END-IF.
            *> Calculos de saldo restante.
-           MOVE 0 TO DEST-SALDOPOS-ENT
-           MOVE 0 TO DEST-SALDOPOS-DEC
+           MOVE 0 TO DEST-SALDOPOS-ENT.
+           MOVE 0 TO DEST-SALDOPOS-DEC.
            COMPUTE DEST-SALDOPOS-ENT = 
                PROG-IMPORTE-ENT + MOV-SALDOPOS-ENT.
            COMPUTE DEST-SALDOPOS-DEC = 
                PROG-IMPORTE-DEC + MOV-SALDOPOS-DEC.
+
+           IF DEST-SALDOPOS-ENT > 10
+               GO TO PSYS-ERR.
 
            *> Escritura.
            ADD 1 TO LAST-MOV-NUM-GLOBAL.
@@ -320,15 +328,17 @@
                     BACKGROUND-COLOR IS RED.
            DISPLAY "Enter - Aceptar" AT LINE 24 COL 33.
 
-        *>    DISPLAY MOV-NUM             AT LINE 13 COL 30.
+           DISPLAY DEST-SALDOPOS-ENT AT LINE 14 COL 30.
+
+           DISPLAY MOV-NUM             AT LINE 13 COL 30.
 
         *>    DISPLAY MOV-TARJETA         AT LINE 15 COL 30.
 
-        *>    DISPLAY MOV-SALDOPOS-ENT    AT LINE 17 COL 30.
+           DISPLAY MOV-SALDOPOS-ENT    AT LINE 17 COL 30.
 
-        *>    DISPLAY LAST-MOV-NUM        AT LINE 19 COL 30.
+           DISPLAY LAST-MOV-NUM-DEST        AT LINE 19 COL 30.
 
-        *>    DISPLAY INCREMENTO          AT LINE 21 COL 30.
+           DISPLAY PUNTERO          AT LINE 21 COL 30.
 
         *>    DISPLAY PROG-ORIGEN         AT LINE 23 COL 30.
            
