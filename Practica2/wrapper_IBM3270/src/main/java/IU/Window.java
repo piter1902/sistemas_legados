@@ -3,9 +3,9 @@ package IU;
 import javax.swing.*;
 import java.awt.*;
 
-public class Ventana extends JFrame {
+public class Window extends JFrame {
 
-    public Ventana() {
+    public Window() {
         setLayout(new FlowLayout());
         add(new Label("Hola mundo"));
         setSize(400, 400);
@@ -15,6 +15,6 @@ public class Ventana extends JFrame {
     }
 
     public static void main(String[] args) {
-        new Ventana();
+        new Window();
     }
 }
