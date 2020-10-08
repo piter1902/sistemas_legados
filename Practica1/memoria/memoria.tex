@@ -109,6 +109,8 @@ Para modificar el menú, se ha añadido un nuevo \emph{CHOICE}, con el fin de qu
 
 En \emph{BANK9}, se ha seguido el esquema propuesto en \emph{BANK3} (consultar movimientos).
 Para obtener únicamente las transferencias se ha modificado el filtrado y se ha tenido en cuenta el concepto del movimiento con el fin de saber si se debía mostrar. De esta manera también se permite obtener las transferencias programadas.
+\\
+
 \begin{lstlisting}
 IF MOV-CONCEPTO IS EQUAL TO "Transferimos" 
                OR MOV-CONCEPTO IS EQUAL TO "Nos transfieren"
@@ -117,8 +119,11 @@ IF MOV-CONCEPTO IS EQUAL TO "Transferimos"
            ELSE 
                MOVE 0 TO MOV-VALIDO. 
 \end{lstlisting}
+\newpage
+Para añadir la funcionalidad de las transferencias programadas se ha modificado el fichero \textit{BANK6.cbl} para permitir la inserción de la fecha a la que se programa la transferencia e indicar si es mensual. Si el campo fecha y mensual es vacío, se ejecuta una transferencia corriente. En caso contrario, se añade al fichero "programadas.ubd" un registro con la información relacionada con la transferencia programada. También se ha creado un nuevo fichero \emph{PROG.cbl} el cual es llamado desde el menú principal con la sentencia '\emph{CALL "PROG".}'. Cada vez que se ejecuta, comprueba el contenido del fichero "programadas.ubd", en el que se almacenan las transferencias programadas que no han sido ejecutadas. Si la fecha de uno de los registros del fichero es menor o igual a la actual en el momento que se lee, se debe de realizar la transferencia. El proceso que se lleva a cabo para ello es el mismo que proporciona las transferencias "normales". Adicionalmente, se comprueba el saldo de la cuenta origen en ese momento. \par
+En caso de que la transferencia esté marcada como mensual, se debe modificar la fecha del registro correspondiente para que sea ejecutada en el siguiente mes. En caso contrario, tras realizar la transferencia, se elimina el registro correspondiente del archivo "programadas.ubd" y se continúa con la búsqueda de transferencias programadas. \par
+Al mismo tiempo que se hace efectiva la transferencia, se deben añadir los registros de movimientos de la cuenta origen y destino, modificando el archivo "movimientos.ubd"
 
-Para añadir la funcionalidad de las transferencias programadas se ha creado un nuevo fichero \emph{PROG.cbl} el cual es llamado desde el menú principal con la sentencia '\emph{CALL "PROG".}'.
 \section{Parte 3: Cambios en la aplicación}
 
 \subsection{Mejorar la interfaz de usuario de ingresar efectivo}
@@ -127,9 +132,6 @@ En esta parte se pide modificar la forma de entrada de efectivo en el programa. 
 Para realizar este comportamiento se debe modificar la entrada de texto y en lugar de admitir un número entero y un número que representa la parte decimal se admitirán 3 números naturales, correspondientes a las cantidades de los distintos billetes.\\
 
 También se ha modificado la lógica del programa para hacer el cálculo del dinero en función de los billetes introducidos en el programa.\\
-
-
-\ref{figure:pantalla_ingreso}\\
 
 \begin{figure}[h!]
 \centering
@@ -146,7 +148,6 @@ En esta sección se pide cambiar los colores de los mensajes para facilitar la l
 
 Para ello se buscarán los mensajes en los que haya ocurrencia de fondo rojo y se sustituirá el color de texto (\emph{FOREGROUND-COLOR}) de la siguiente forma:
 
-\newpage
 \begin{lstlisting}
 *> Antes
 DISPLAY "Los codigos PIN nuevos no coinciden." 
