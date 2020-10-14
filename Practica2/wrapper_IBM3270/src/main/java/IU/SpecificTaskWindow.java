@@ -37,7 +37,7 @@ public class SpecificTaskWindow extends JFrame {
 
 
         // Final operations
-        setTitle("General Tasks");
+        setTitle("Specific Tasks");
         setSize(800, 800);
         // Close on EXIT
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
