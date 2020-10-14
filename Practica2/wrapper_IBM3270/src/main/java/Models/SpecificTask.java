@@ -3,49 +3,45 @@ package Models;
 import java.util.Date;
 import java.util.Objects;
 
-
-public class GeneralTask implements Task {
+public class SpecificTask implements Task {
 
     private Date date;
+    private String name;
     private String description;
 
     /**
      * Public default constructor.
      */
-    public GeneralTask() {
+    public SpecificTask() {
         this.date = new Date();
+        this.name = "";
         this.description = "";
     }
 
     /**
      * Public constructor.
      * @param date date of the task.
+     * @param name name of the task.
      * @param description description of the task.
      */
-    public GeneralTask(Date date, String description) {
+    public SpecificTask(Date date, String name, String description){
+        this.name = name;
         this.date = date;
         this.description = description;
     }
 
     /**
-     * Method that saves a GENERAL Task in tareas.c
-     * @return true iff task is correctly saved.
+     * Method that saves a SPECIFIC Task in tareas.c
+     * @return true iff task was saved succesfully.
+     *   In other case. Return false.
      */
     @Override
     public boolean saveTask() {
         // TODO: Implement this.
-        return true;
+        return false;
     }
 
     /// Getters and Setters
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 
     public Date getDate() {
         return date;
@@ -53,6 +49,22 @@ public class GeneralTask implements Task {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     /**
@@ -63,10 +75,11 @@ public class GeneralTask implements Task {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof GeneralTask)) return false;
-        GeneralTask that = (GeneralTask) o;
+        if (!(o instanceof SpecificTask)) return false;
+        SpecificTask that = (SpecificTask) o;
         return getDate().equals(that.getDate()) &&
-                description.equals(that.description);
+                getName().equals(that.getName()) &&
+                getDescription().equals(that.getDescription());
     }
 
     /**
@@ -75,6 +88,6 @@ public class GeneralTask implements Task {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(getDate(), description);
+        return Objects.hash(getDate(), getName(), getDescription());
     }
 }
