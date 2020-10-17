@@ -31,6 +31,15 @@
 
 Para esta práctica el profesor ha entregado un código \emph{COBOL} procedente de una copia de seguridad de hace 20 años. No se conserva ninguna documentación acerca de la misma. El objetivo de la práctica es conseguir ejecutar el programa modificando adecuadamente para poder compilarlo y ejecutarlo con las nuevas funcionalidades incorporadas.
 
+\section{Esfuerzos invertidos}
+
+\begin{itemize}
+\item Pedro Allué Tamargo: instalación del compilador \emph{COBOL}. Compilación del código. Arreglar errores del código fuente dado. Creación de la funcionalidad de transacciones. Funcionalidad de \emph{Cambio de clave}. Apartado 3. Redacción de la Memoria.
+\item Juan José Tambo Tambo: instalación del compilador \emph{COBOL}. Compilación del código. Arreglar errores del código fuente dado. Creación de la funcionalidad de transacciones. Funcionalidad de \emph{Cambio de clave}. Apartado 3. Redacción de la Memoria.
+\item Jesús Villacampa Sagaste: instalación del compilador \emph{COBOL}. Compilación del código. Arreglar errores del código fuente dado. Creación de la funcionalidad de transacciones. Funcionalidad de \emph{Cambio de clave}. Apartado 3. Redacción de la Memoria.
+\end{itemize}
+
+
 \section{Compilación del código}
 
 Para compilar el código se han investigado los compiladores de \emph{COBOL}. Se ha elegido el compilador \href{https://sourceforge.net/projects/gnucobol/}{\emph{GNUCOBOL}} (antes \emph{OpenCOBOL}). Con este compilador hay que traducir el código proporcionado a un formato reconocible por el compilador. Las diferencias se encuentran en las sentencias \emph{DISPLAY} y \emph{ACCEPT}. La traducción sería la siguiente:
@@ -93,6 +102,7 @@ El funcionamiento de este programa es sobrescribir el fichero \emph{tarjetas.ubd
 Esta tarea consiste en añadir una nueva funcionalidad al menú que consiste en mostrar todas las transferencias. Para esto, se ha requerido la modificación del funcionamiento de las transferencias, añadiendo la funcionalidad de realizar una transferencia programada, ya sea en una fecha específica o de manera mensual.\\
 Para modificar el menú, se ha añadido un nuevo \emph{CHOICE}, con el fin de que el usuario pueda escoger la opción de listar transferencias, desplazando las otras dos funcionalidades como se ha propuesto en el enunciado.
 
+\newpage
 \begin{lstlisting}
 	   IF CHOICE = 6 
                CALL "BANK9" USING TNUM
@@ -109,7 +119,7 @@ Para modificar el menú, se ha añadido un nuevo \emph{CHOICE}, con el fin de qu
 
 En \emph{BANK9}, se ha seguido el esquema propuesto en \emph{BANK3} (consultar movimientos).
 Para obtener únicamente las transferencias se ha modificado el filtrado y se ha tenido en cuenta el concepto del movimiento con el fin de saber si se debía mostrar. De esta manera también se permite obtener las transferencias programadas.
-\\
+
 
 \begin{lstlisting}
 IF MOV-CONCEPTO IS EQUAL TO "Transferimos" 
@@ -119,7 +129,7 @@ IF MOV-CONCEPTO IS EQUAL TO "Transferimos"
            ELSE 
                MOVE 0 TO MOV-VALIDO. 
 \end{lstlisting}
-\newpage
+
 Para añadir la funcionalidad de las transferencias programadas se ha modificado el fichero \textit{BANK6.cbl} para permitir la inserción de la fecha a la que se programa la transferencia e indicar si es mensual. Si el campo fecha y mensual es vacío, se ejecuta una transferencia corriente. En caso contrario, se añade al fichero "programadas.ubd" un registro con la información relacionada con la transferencia programada. También se ha creado un nuevo fichero \emph{PROG.cbl} el cual es llamado desde el menú principal con la sentencia '\emph{CALL "PROG".}'. Cada vez que se ejecuta, comprueba el contenido del fichero "programadas.ubd", en el que se almacenan las transferencias programadas que no han sido ejecutadas. Si la fecha de uno de los registros del fichero es menor o igual a la actual en el momento que se lee, se debe de realizar la transferencia. El proceso que se lleva a cabo para ello es el mismo que proporciona las transferencias "normales". Adicionalmente, se comprueba el saldo de la cuenta origen en ese momento. \par
 En caso de que la transferencia esté marcada como mensual, se debe modificar la fecha del registro correspondiente para que sea ejecutada en el siguiente mes. En caso contrario, tras realizar la transferencia, se elimina el registro correspondiente del archivo "programadas.ubd" y se continúa con la búsqueda de transferencias programadas. \par
 Al mismo tiempo que se hace efectiva la transferencia, se deben añadir los registros de movimientos de la cuenta origen y destino, modificando el archivo "movimientos.ubd"
@@ -140,8 +150,7 @@ También se ha modificado la lógica del programa para hacer el cálculo del din
 \label{fig:pantalla_ingreso}
 \end{figure}
 
-
-
+\newpage
 \subsection{Mejorar la lectura de los mensajes}
 
 En esta sección se pide cambiar los colores de los mensajes para facilitar la lectura de los mismos. En el caso de los mensajes que se presentan en fondo rojo se deberán mostrar en color blanco y los títulos deben tener un color más claro.\\
@@ -192,6 +201,7 @@ En algunas pantallas aparecen ceros en la esquina inferior derecha. Esto se debe
 \label{fig:error}
 \end{figure}
 
+\newpage
 \subsection{Ventana de ejecución de 80x25 caracteres}
 
 Se pide que la ventana de ejecución tenga un tamaño dado. Esto tiene implicaciones directas en el código ya que en \emph{COBOL} es necesario establecer la línea y columna donde se va a mostrar un texto y por lo tanto no pueden excederse estos límites.\\
