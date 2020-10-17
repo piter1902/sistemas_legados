@@ -10,5 +10,5 @@ public interface Task {
      * @return true iff task was saved succesfully.
      *  In other case. Return false.
      */
-    public boolean saveTask();
+    boolean saveTask();
 }

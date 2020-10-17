@@ -6,23 +6,23 @@ import java.util.Objects;
 
 public class GeneralTask implements Task {
 
-    private Date date;
+    private String date;
     private String description;
 
     /**
      * Public default constructor.
      */
     public GeneralTask() {
-        this.date = new Date();
+        this.date = new Date().toString();
         this.description = "";
     }
 
     /**
      * Public constructor.
-     * @param date date of the task.
+     * @param date date of the task (DDMM).
      * @param description description of the task.
      */
-    public GeneralTask(Date date, String description) {
+    public GeneralTask(String date, String description) {
         this.date = date;
         this.description = description;
     }
@@ -47,11 +47,11 @@ public class GeneralTask implements Task {
         this.description = description;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 

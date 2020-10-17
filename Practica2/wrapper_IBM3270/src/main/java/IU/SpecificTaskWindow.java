@@ -3,17 +3,25 @@ package IU;
 import Models.GeneralTask;
 import Models.SpecificTask;
 
+import java.util.*;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Date;
+import java.util.List;
 
 public class SpecificTaskWindow extends JFrame {
 
+    public static final int SLEEP_TIME = 5000;
+
+    private final List<SpecificTask> specificTasks;
+    private final Thread updater;
+
     private final Container leftContainer;
+    private JTable table;
+
     private final Container rightContainer;
 
     /**
@@ -22,6 +30,25 @@ public class SpecificTaskWindow extends JFrame {
     public SpecificTaskWindow() {
 
         // TODO: Do some stuff to get DATA
+
+        specificTasks = new ArrayList<>();
+
+        updater = new Thread(() -> {
+            for (; ; ) {
+                synchronized (specificTasks) {
+                    System.out.println("Estoy vivo. Size del vector = " + specificTasks.size());
+                    specificTasks.add(new SpecificTask(String.valueOf(new Random().nextInt(9999)), "Name", "Description"));
+                    table.updateUI();
+                }
+                try {
+                    Thread.sleep(SLEEP_TIME);
+                } catch (InterruptedException e) {
+                    System.out.println("Fin del thread updater");
+                    break;
+                }
+            }
+        });
+
 
         // Top-level container
         Container cp = getContentPane();
@@ -42,6 +69,9 @@ public class SpecificTaskWindow extends JFrame {
         // Close on EXIT
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
+
+        // Start updater Thread
+        updater.start();
     }
 
     /**
@@ -71,7 +101,7 @@ public class SpecificTaskWindow extends JFrame {
 
             @Override
             public int getRowCount() {
-                return 100;
+                return specificTasks.size();
             }
 
             @Override
@@ -81,18 +111,16 @@ public class SpecificTaskWindow extends JFrame {
 
             @Override
             public Object getValueAt(int i, int i1) {
-                // TODO: Remove this Mock object
-                SpecificTask mock = new SpecificTask(new Date(), "Name", "Mock Object");
                 if (i1 == 0) {
-                    return mock.getDate();
+                    return specificTasks.get(i).getDate();
                 } else if (i1 == 1) {
-                    return mock.getName();
+                    return specificTasks.get(i).getName();
                 } else {
-                    return mock.getDescription();
+                    return specificTasks.get(i).getDescription();
                 }
             }
         };
-        JTable table = new JTable(dataModel);
+        table = new JTable(dataModel);
         JScrollPane scrollPane = new JScrollPane(table);
         c.add(scrollPane);
         return c;
@@ -112,6 +140,7 @@ public class SpecificTaskWindow extends JFrame {
         addTaskButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                new AddSpecificTaskWindow().setVisible(true);
                 System.out.println("Add Specific Task");
             }
         });
@@ -124,6 +153,7 @@ public class SpecificTaskWindow extends JFrame {
                 System.out.println("Exit");
                 new Window().setVisible(true);
                 setVisible(false);
+                dispose();
             }
         });
 

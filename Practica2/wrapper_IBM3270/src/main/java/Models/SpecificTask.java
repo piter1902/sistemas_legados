@@ -5,7 +5,7 @@ import java.util.Objects;
 
 public class SpecificTask implements Task {
 
-    private Date date;
+    private String date;
     private String name;
     private String description;
 
@@ -13,18 +13,18 @@ public class SpecificTask implements Task {
      * Public default constructor.
      */
     public SpecificTask() {
-        this.date = new Date();
+        this.date = new Date().toString();
         this.name = "";
         this.description = "";
     }
 
     /**
      * Public constructor.
-     * @param date date of the task.
+     * @param date date of the task (string).
      * @param name name of the task.
      * @param description description of the task.
      */
-    public SpecificTask(Date date, String name, String description){
+    public SpecificTask(String date, String name, String description){
         this.name = name;
         this.date = date;
         this.description = description;
@@ -43,11 +43,11 @@ public class SpecificTask implements Task {
 
     /// Getters and Setters
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 

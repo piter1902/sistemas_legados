@@ -7,8 +7,8 @@ import java.awt.event.ActionListener;
 
 public class Window extends JFrame {
 
-    private JButton generalTask;
-    private JButton specificTask;
+    private final JButton generalTask;
+    private final JButton specificTask;
 
     public Window() {
 
@@ -25,6 +25,7 @@ public class Window extends JFrame {
                 System.out.println("General Task");
                 new GeneralTaskWindow().setVisible(true);
                 setVisible(false);
+                dispose();
             }
         });
 
