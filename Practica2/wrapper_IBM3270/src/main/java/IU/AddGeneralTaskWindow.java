@@ -16,7 +16,7 @@ public class AddGeneralTaskWindow extends JFrame {
         Container cp = getContentPane();
         cp.setLayout(new GridLayout(5, 1, 0, 0));
 
-        // Initizlize components
+        // Initialize components
         calendarField = new TextField();
 
         descriptionArea = new TextArea();

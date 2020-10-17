@@ -17,7 +17,7 @@ public class AddSpecificTaskWindow extends JFrame {
         Container cp = getContentPane();
         cp.setLayout(new GridLayout(7, 1, 0, 0));
 
-        // Initizlize components
+        // Initialize components
         calendarField = new TextField();
 
         nameField = new TextField();
