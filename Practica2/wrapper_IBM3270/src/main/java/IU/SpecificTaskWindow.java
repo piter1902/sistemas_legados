@@ -140,7 +140,7 @@ public class SpecificTaskWindow extends JFrame {
         addTaskButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                new AddSpecificTaskWindow().setVisible(true);
+                new AddSpecificTaskWindow(specificTasks, table).setVisible(true);
                 System.out.println("Add Specific Task");
             }
         });

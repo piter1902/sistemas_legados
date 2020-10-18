@@ -140,7 +140,7 @@ public class GeneralTaskWindow extends JFrame {
         addTaskButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                new AddGeneralTaskWindow().setVisible(true);
+                new AddGeneralTaskWindow(generalTasks, table).setVisible(true);
                 System.out.println("Add General Task");
             }
         });

@@ -1,9 +1,12 @@
 package IU;
 
+import Models.GeneralTask;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 public class AddGeneralTaskWindow extends JFrame {
 
@@ -11,7 +14,7 @@ public class AddGeneralTaskWindow extends JFrame {
     private final TextField calendarField;
     private final JButton acceptButton;
 
-    public AddGeneralTaskWindow() {
+    public AddGeneralTaskWindow(List<GeneralTask> generalTasks, JTable table) {
 
         Container cp = getContentPane();
         cp.setLayout(new GridLayout(5, 1, 0, 0));
@@ -26,7 +29,11 @@ public class AddGeneralTaskWindow extends JFrame {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 System.out.println("Saving new General Task.");
-                // TODO: Edit this to save a new General Task in tareas.c
+                synchronized (generalTasks) {
+                    generalTasks.add(new GeneralTask(calendarField.getText(), descriptionArea.getText()));
+                    table.updateUI();
+                    // TODO: Edit this to save a new General Task in tareas.c
+                }
                 setVisible(false);
                 dispose();
             }

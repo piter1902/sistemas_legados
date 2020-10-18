@@ -1,9 +1,12 @@
 package IU;
 
+import Models.SpecificTask;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 public class AddSpecificTaskWindow extends JFrame {
 
@@ -12,7 +15,7 @@ public class AddSpecificTaskWindow extends JFrame {
     private final TextField nameField;
     private final JButton acceptButton;
 
-    public AddSpecificTaskWindow() {
+    public AddSpecificTaskWindow(List<SpecificTask> specificTasks, JTable table) {
 
         Container cp = getContentPane();
         cp.setLayout(new GridLayout(7, 1, 0, 0));
@@ -29,7 +32,11 @@ public class AddSpecificTaskWindow extends JFrame {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 System.out.println("Saving new General Task.");
-                // TODO: Edit this to save a new Specific Task in tareas.c
+                synchronized (specificTasks) {
+                    specificTasks.add(new SpecificTask(calendarField.getText(), nameField.getText(), descriptionArea.getText()));
+                    table.updateUI();
+                    // TODO: Edit this to save a new Specific Task in tareas.c
+                }
                 setVisible(false);
                 dispose();
             }
