@@ -522,6 +522,19 @@ public class S3270 {
     public void type(String text) {
         assertConnected();
         InputField field = this.getScreen().getFocusedField();
+
+        if (field == null && logger.isDebugEnabled()) {
+            logger.debug("---> " + "NULL");
+        }
+        field.setValue(text);
+    }
+
+    public void typeAt(String text, int x, int y) {
+        assertConnected();
+        InputField field = this.getScreen().getInputFieldAt(x, y);
+        if (field == null && logger.isDebugEnabled()) {
+            logger.debug("---> " + "NULL");
+        }
         field.setValue(text);
     }
 
