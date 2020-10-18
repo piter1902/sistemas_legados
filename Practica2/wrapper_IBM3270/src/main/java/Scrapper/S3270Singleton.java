@@ -66,15 +66,21 @@ public class S3270Singleton implements Closeable {
     private void enter1() {
         s3270.submitScreen();
         s3270.enter();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         s3270.updateScreen();
+
     }
 
     public void addGeneralTask(GeneralTask generalTask) {
         s3270.type("1");
         enter1();
         s3270.type("1");
-
         enter1();
+
         s3270.type(generalTask.getDate());
         enter1();
         s3270.type(generalTask.getDescription());
@@ -115,10 +121,11 @@ public class S3270Singleton implements Closeable {
 
         }
         s3270.type("3");
-        enter2();
+        enter1();
     }
 
     public void printSpecificTasks() {
+
         s3270.type("2");
         enter1();
         s3270.type("2");
@@ -131,11 +138,11 @@ public class S3270Singleton implements Closeable {
             if (linea.matches(tasksPattern)) {
                 System.out.println(linea);
             }
-
         }
         s3270.type("3");
-        enter2();
+        enter1();
     }
+
     @Override
     public void close() throws IOException {
         s3270.disconnect();

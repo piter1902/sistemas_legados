@@ -79,8 +79,12 @@ public class Window extends JFrame {
 
         s3270Singleton.addSpecificTask(new SpecificTask("2222", "JUANJO", "Sp1"));
         s3270Singleton.printSpecificTasks();
+        System.out.println("*-------------HOLA------------*");
         s3270Singleton.addSpecificTask(new SpecificTask("2223", "PEDRO", "Sp2"));
-        s3270Singleton.printSpecificTasks();
+        s3270Singleton.print();
+        //s3270Singleton.printSpecificTasks();
+        System.out.println("*-------------------------*");
+        s3270Singleton.print();
 
         try {
             s3270Singleton.close();
