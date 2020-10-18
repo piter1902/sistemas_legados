@@ -1,6 +1,7 @@
 package Scrapper;
 
 import Models.GeneralTask;
+import Models.SpecificTask;
 import Render.TextRenderer;
 
 import java.io.Closeable;
@@ -69,29 +70,38 @@ public class S3270Singleton implements Closeable {
     }
 
     public void addGeneralTask(GeneralTask generalTask) {
-        //s3270.typeAt("1", X_TEXT, Y_TEXT);
         s3270.type("1");
         enter1();
-//        s3270.typeAt("1", X_TEXT, Y_TEXT);
         s3270.type("1");
 
         enter1();
-//        s3270.typeAt(generalTask.getDate(), X_TEXT, Y_TEXT);
         s3270.type(generalTask.getDate());
         enter1();
-//        s3270.typeAt(generalTask.getDescription(), X_TEXT, Y_TEXT);
         s3270.type(generalTask.getDescription());
         enter1();
-//        s3270.typeAt("3", X_TEXT, Y_TEXT);
         s3270.type("3");
         enter2();
     }
 
-    public void printGeneralTasks() {
-//        s3270.typeAt("2", X_TEXT, Y_TEXT);
+    public void addSpecificTask(SpecificTask specificTask) {
+        s3270.type("1");
+        enter1();
         s3270.type("2");
         enter1();
-//        s3270.typeAt("1", X_TEXT, Y_TEXT);
+
+        s3270.type(specificTask.getDate());
+        enter1();
+        s3270.type(specificTask.getName());
+        enter1();
+        s3270.type(specificTask.getDescription());
+        enter1();
+        s3270.type("3");
+        enter1();
+    }
+
+    public void printGeneralTasks() {
+        s3270.type("2");
+        enter1();
         s3270.type("1");
         enter1();
         String out = getScreenText();
@@ -104,11 +114,28 @@ public class S3270Singleton implements Closeable {
             }
 
         }
-//        s3270.typeAt("3", X_TEXT, Y_TEXT);
         s3270.type("3");
         enter2();
     }
 
+    public void printSpecificTasks() {
+        s3270.type("2");
+        enter1();
+        s3270.type("2");
+        enter1();
+        String out = getScreenText();
+
+        String tasksPattern = "^TASK [0-9]+: SPECIFIC .*$";
+        List<String> pantalla = Arrays.asList(out.split("\n"));
+        for (String linea : pantalla) {
+            if (linea.matches(tasksPattern)) {
+                System.out.println(linea);
+            }
+
+        }
+        s3270.type("3");
+        enter2();
+    }
     @Override
     public void close() throws IOException {
         s3270.disconnect();
