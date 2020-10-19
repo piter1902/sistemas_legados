@@ -1,0 +1,6 @@
+Para iniciar un entorno venv teneis que:
+virtualenv --python=python3 venv
+souce venv/bin/activate
+pip3 install -r requirements.txt
+
+Y para desactivar tendreis una funcion deactivate.
