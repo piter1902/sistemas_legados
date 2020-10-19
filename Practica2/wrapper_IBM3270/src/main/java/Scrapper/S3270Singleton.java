@@ -3,9 +3,11 @@ package Scrapper;
 import Models.GeneralTask;
 import Models.SpecificTask;
 import Render.TextRenderer;
+import jdk.nashorn.api.tree.GotoTree;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,6 +19,7 @@ public class S3270Singleton implements Closeable {
     public static final int Y_TEXT = 22;
     private static S3270Singleton instance;
     private static S3270 s3270;
+    private static final int SCREEN_WIDTH_IN_CHARS = 80;
 
     private S3270Singleton() {
         s3270 = new S3270("s3270", "155.210.152.51", 101, TYPE_3278, MODE_80_24);
@@ -64,15 +67,18 @@ public class S3270Singleton implements Closeable {
     }
 
     private void enter1() {
+        if (s3270.isEOF()) {
+            s3270.enter();
+        }
         s3270.submitScreen();
         s3270.enter();
         try {
-            Thread.sleep(100);
+            Thread.sleep(150);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        s3270.updateScreen();
 
+        s3270.updateScreen();
     }
 
     public void addGeneralTask(GeneralTask generalTask) {
@@ -86,7 +92,7 @@ public class S3270Singleton implements Closeable {
         s3270.type(generalTask.getDescription());
         enter1();
         s3270.type("3");
-        enter2();
+        enter1();
     }
 
     public void addSpecificTask(SpecificTask specificTask) {
@@ -94,11 +100,11 @@ public class S3270Singleton implements Closeable {
         enter1();
         s3270.type("2");
         enter1();
-
         s3270.type(specificTask.getDate());
         enter1();
         s3270.type(specificTask.getName());
         enter1();
+//        temporal();
         s3270.type(specificTask.getDescription());
         enter1();
         s3270.type("3");
@@ -124,23 +130,88 @@ public class S3270Singleton implements Closeable {
         enter1();
     }
 
+    //TODO: Borra esto por dios
+    public void temporal() {
+        for (Field f : s3270.getScreen().getFields()) {
+            if (f.getText().contains("More")) {
+                for (int i = 1; i < f.getText().length(); i++) {
+                    char temp = s3270.getScreen().charAt(i, 23);
+                    System.out.println(i + "-----" + temp);
+                }
+//                System.out.println(f.getStartX() + " --- " + f.getStartY());
+//                System.out.println(f.getEndX() + " --- " + f.getEndY());
+            }
+
+        }
+    }
+
     public void printSpecificTasks() {
-
+        boolean end = true;
         s3270.type("2");
         enter1();
         s3270.type("2");
         enter1();
-        String out = getScreenText();
 
-        String tasksPattern = "^TASK [0-9]+: SPECIFIC .*$";
-        List<String> pantalla = Arrays.asList(out.split("\n"));
-        for (String linea : pantalla) {
-            if (linea.matches(tasksPattern)) {
-                System.out.println(linea);
+        while (end) {
+            String out = getScreenText();
+
+            String tasksPattern = "^TASK [0-9]+: SPECIFIC .*$";
+            List<String> pantalla = Arrays.asList(out.split("\n"));
+            for (String linea : pantalla) {
+                if (linea.matches(tasksPattern)) {
+                    System.out.println(linea);
+                }
+                if (end = linea.contains("More")) {
+                    enter1();
+                }
             }
         }
         s3270.type("3");
         enter1();
+    }
+
+    private static final String SCREEN_SEPARATOR = "+--------------------------------------------------------------------------------+";
+
+    public void printScreen() {
+        printScreen(System.out);
+    }
+
+    public void printScreen(PrintStream stream) {
+
+        final String[] lines = getScreenText().split("\n");
+        final String blanks = "                                                                                ";
+        stream.println(SCREEN_SEPARATOR);
+        for (String line : lines) {
+            final String fixedLine = (line + blanks).substring(0, SCREEN_WIDTH_IN_CHARS);
+            stream.println(String.format("|%s|", fixedLine));
+
+        }
+        stream.println(SCREEN_SEPARATOR);
+    }
+
+    public void printScreen2(PrintStream stream) {
+
+        String[] lines = getScreenText().split("\n");
+        final String blanks = "                                                                                ";
+        boolean end = false;
+        stream.println(SCREEN_SEPARATOR);
+
+        for (String line : lines) {
+            end = line.equals("TOTAL TASK");
+            final String fixedLine = (line + blanks).substring(0, SCREEN_WIDTH_IN_CHARS);
+            stream.println(String.format("|%s|", fixedLine));
+        }
+        if (!end) {
+            System.out.println("*...................*");
+            s3270.enter();
+            lines = getScreenText().split("\n");
+            for (String line : lines) {
+                end = line.equals("TOTAL TASK");
+                final String fixedLine = (line + blanks).substring(0, SCREEN_WIDTH_IN_CHARS);
+                stream.println(String.format("|%s|", fixedLine));
+            }
+        }
+        stream.println(SCREEN_SEPARATOR);
     }
 
     @Override

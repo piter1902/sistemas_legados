@@ -519,6 +519,17 @@ public class S3270 {
         }
     }
 
+    public boolean isEOF() {
+        assertConnected();
+        char estado = this.getScreen().charAt(70, 23);
+        if (estado == 'M') {
+            if (logger.isDebugEnabled())
+                logger.debug("---> MORE");
+            return true;
+        }
+        return false;
+    }
+
     public void type(String text) {
         assertConnected();
         InputField field = this.getScreen().getFocusedField();

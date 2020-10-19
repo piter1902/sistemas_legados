@@ -70,21 +70,25 @@ public class Window extends JFrame {
         //new Window();
         S3270Singleton s3270Singleton = S3270Singleton.getInstance();
 
-//        s3270Singleton.addGeneralTask(new GeneralTask("1902", "PRUEBA123456"));
-//        s3270Singleton.printGeneralTasks();
-//        s3270Singleton.addGeneralTask(new GeneralTask("2009", "POLLA1"));
-//        s3270Singleton.printGeneralTasks();
-//        s3270Singleton.addGeneralTask(new GeneralTask("2209", "POLLA2"));
-//        s3270Singleton.printGeneralTasks();
+        s3270Singleton.addGeneralTask(new GeneralTask("1902", "PRUEBA123456"));
+        s3270Singleton.printGeneralTasks();
+        s3270Singleton.addGeneralTask(new GeneralTask("2009", "POLLA1"));
+        s3270Singleton.printGeneralTasks();
+        s3270Singleton.addGeneralTask(new GeneralTask("2209", "POLLA2"));
+        s3270Singleton.printGeneralTasks();
 
+//        s3270Singleton.printSpecificTasks();
+
+//        System.out.println("*-------------HOLA------------*");
         s3270Singleton.addSpecificTask(new SpecificTask("2222", "JUANJO", "Sp1"));
-        s3270Singleton.printSpecificTasks();
-        System.out.println("*-------------HOLA------------*");
         s3270Singleton.addSpecificTask(new SpecificTask("2223", "PEDRO", "Sp2"));
-        s3270Singleton.print();
-        //s3270Singleton.printSpecificTasks();
-        System.out.println("*-------------------------*");
-        s3270Singleton.print();
+        s3270Singleton.addSpecificTask(new SpecificTask("2224", "CHUS", "Sp3"));
+        s3270Singleton.addSpecificTask(new SpecificTask("2225", "MENA", "Sp4"));
+
+        s3270Singleton.printSpecificTasks();
+
+        //        s3270Singleton.printScreen();
+
 
         try {
             s3270Singleton.close();
