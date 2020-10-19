@@ -6,6 +6,12 @@
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+\usepackage[hidelinks]{hyperref}
+\usepackage{listings}
+\lstset{
+    frame = single,     
+	framexleftmargin = 15pt
+}
 
 \begin{document}
 
@@ -33,17 +39,87 @@
 
 \section{Instalación del emulador}
 
+Para la realización de esta práctica se ha utilizado el Sistema Operativo \emph{Ubuntu}. Para instalar el emulador \emph{x3270}\footnote{\url{http://x3270.bgp.nu/}} se ejecutarán las órdenes:
+
+\begin{lstlisting}
+sudo apt update
+sudo apt -y install x3270
+\end{lstlisting}
+
+Estas instrucciones instalarán el emulador y las herramientas de \emph{scrapping} (\emph{s3270}).\\
+
+Para conectar el \emph{scrapper} con el \emph{mainframe} se ejecutará la orden:
+
+\begin{lstlisting}
+s3270 155.210.152.51:101
+\end{lstlisting}
+
+
 \section{Descripción de la aplicación legada}
 
+La aplicación legada se corresponde con una lista de tareas. El usuario podrá añadir dos tipos distintos de tareas: tareas generales y tareas específicas.\\
+Esta distinción implica que las tareas específicas disponen de un campo ``nombre'' del que no disponen las generales.\\
+Otro punto a tener en cuenta de la aplicación legada es que las tareas guardadas durante una ejecución no son persistentes. Es decir, las tareas no se conservan de una ejecución a otra.
+
+\textbf{\begin{Huge}
+Poner los problemas de longitud y los espacios en las tareas.
+\end{Huge}}
+
+\newpage
 \section{Implementación del Wrapper}
+
+Se pide realizar una aplicación con interfaz gráfica que encapsule el acceso a la aplicación legada. Se ha elegido \emph{Java} como lenguaje para implementar este \emph{wrapper}.
 
 \subsection{Modelo de datos}
 
+El modelo de datos se compone de 2 clases (Figura \ref{fig:tasks_class_diagram}) que representan las distintas estructuras de datos que son las tareas de la aplicación legada.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=0.5]{images/class_diagram.png}
+\caption{Diagrama de clases UML de Tareas}
+\label{fig:tasks_class_diagram}
+\end{figure}
+
+Las clases se componen de los mismos elementos que la aplicación legada. En el caso de \emph{GeneralTask} se compone de 2 campos: fecha y descripción. En el caso de \emph{SpecificTask} se compone de 3 campos: fecha, nombre y descripción.
+
 \subsection{Interfaz gráfica de usuario}
+
+La interfaz gráfica de usuario (GUI) se basa en las librerías gráficas \emph{javax.swing} y \emph{java.awt}.\\
+Se ha estructurado la aplicación de tal manera que el usuario al iniciarla puede elegir entre acceder a las tareas generales o a las específicas (Figura \ref{fig:main_screen}).
+
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=0.4]{images/main_screen.png}
+\caption{Pantalla principal de la aplicación}
+\label{fig:main_screen}
+\end{figure}
+
+Tras acceder a la opción de \emph{General Task} se puede observar una tabla que muestra las distintas tareas del tipo ``General'' que se han introducido en la aplicación (Figura \ref{fig:general_task_screen}).
+
+\newpage
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=0.4]{images/general_task_screen.png}
+\caption{Pantalla que muestra las tareas generales de la aplicación}
+\label{fig:general_task_screen}
+\end{figure}
+
+Si en esta pantalla se pulsa sobre el botón \emph{``Add Task''} se abrirá una nueva ventana donde podremos introducir una nueva tarea a la aplicación (Figura \ref{fig:add_general_task_screen}).
+
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=0.6]{images/add_general_task_screen.png}
+\caption{Pantalla que para añadir una tarea general a la aplicación}
+\label{fig:add_general_task_screen}
+\end{figure}
+
+En el caso de las tareas ``específicas'' se mostrarían de manera análoga con la diferencia de que la tabla que las muestra es de 3 columnas (fecha, nombre y descripción).
+
 
 \subsection{Screen scrapping}
 
-
+\textbf{{\Huge Hola Tambo (y Chusé) esta parte ya es tuya bro. Lo siento.}}
 
 
 \end{document}
