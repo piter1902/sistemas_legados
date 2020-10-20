@@ -119,6 +119,22 @@ En el caso de las tareas ``específicas'' se mostrarían de manera análoga con 
 
 \subsection{Screen scrapping}
 
+Para poder realizar la comunicación con 3270, inicialmente se había considerado utilizar \textit{WS3270} para realizar la comunicación, pero resultaba demasiado tedioso y generaba varios problemas. Es por ello que finalmente se ha utilizado \textit{s3270}\footnote{\url{http://x3270.bgp.nu/s3270-man.html}}, una herramienta de \textit{screen-scrapping}\footnote{\url{https://x3270.miraheze.org/wiki/Screen_Scraping}} para Linux. \\
+Las funciones utilizadas para trabajar con el \textit{scrapper} se han obtenido de la siguiente \href{https://vebqa.github.io/f3270/release/doxygen/S3270_8java_source.html}{página}.\\
+Para el uso de esta herramienta en Java se han seguido las indicaciones de la memoria, ejecutando el comando de la siguiente manera:
+\begin{lstlisting}
+final String commandLine = String.format("%s -model %s-%d %s:%d", s3270Path
+	, type.getType(), mode.getMode(), hostname, port);
+
+s3270 = Runtime.getRuntime().exec(commandLine);
+out = new PrintWriter(new OutputStreamWriter(s3270.getOutputStream()
+	, "ISO-8859-1"));
+in = new BufferedReader(new InputStreamReader(s3270.getInputStream()
+	, "ISO-8859-1"));
+\end{lstlisting}
+ 
+Se ha seguido un patrón de diseño \textit{Singleton} para garantizar que solo se cree una única conexión con el \textit{Mainframe}, junto a métodos encargados de añadir tareas (tanto específicas como generales) y mostrarlas. Para ello, se escribe en \textit{scrapper} cada uno de los comandos necesarios para realizar las operaciones. Han aparecido una serie de problemas relacionadas con la inserción y lectura de texto, ya que, en ocasiones, el programa enviaba información al \textit{scrapper} antes que este procesara la operación anterior, lo que provocaba sobreescrituras en el buffer. Para solventar este problema, se han añadido retrasos utilizando el comando "Thread.sleep(X)".
+
 \textbf{{\Huge Hola Tambo (y Chusé) esta parte ya es tuya bro. Lo siento.}}
 
 
