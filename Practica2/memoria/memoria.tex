@@ -16,7 +16,12 @@
 \begin{document}
 
 \begin{titlepage}
-\title{\textbf{{\Huge Práctica 2 - Sistemas Legados}}}
+\title{
+	\textbf{
+		{\Huge Práctica 2: Wrapper sobre IBM ESA/390}\\
+		{\large Sistemas Legados}
+	}
+}
 \author{
 	Pedro Allué Tamargo (758267)
 	\and
@@ -32,9 +37,9 @@
 \section{Esfuerzos invertidos}
 
 \begin{itemize}
-\item Pedro Allué Tamargo:
-\item Juan José Tambo Tambo:
-\item Jesús Villacampa Sagaste:
+\item Pedro Allué Tamargo: Interfaz gráfica, estructura de clases, integración con el mainframe y memoria.
+\item Juan José Tambo Tambo: Conexión con el mainframe, integración con el mainframe y memoria.
+\item Jesús Villacampa Sagaste: Interfaz gráfica, conexión con el mainframe y memoria.
 \end{itemize}
 
 \section{Instalación del emulador}
@@ -60,7 +65,9 @@ s3270 155.210.152.51:101
 La aplicación legada se corresponde con una lista de tareas. El usuario podrá añadir dos tipos distintos de tareas: tareas generales y tareas específicas.\\
 Esta distinción implica que las tareas específicas disponen de un campo ``nombre'' del que no disponen las generales.\\
 Otro punto a tener en cuenta de la aplicación legada es que las tareas guardadas durante una ejecución no son persistentes. Es decir, las tareas no se conservan de una ejecución a otra.\\
-Al realizar la comunicación con la aplicación, han aparecido una serie de problemas con el número máximo de carácteres que se admiten a la hora de asignar nuevas tareas. En las tareas generales, si se considera que se introducen 4 dígitos en la fecha, admite 12 como máximo para la descripción. En cuanto a las específicas, 
+Al realizar la comunicación con la aplicación, han aparecido una serie de problemas con el número máximo de carácteres que se admiten a la hora de asignar nuevas tareas. En las tareas generales, si se considera que se introducen 4 dígitos en la fecha, admite 12 como máximo para la descripción. En cuanto a las específicas, se admiten 20 caracteres como máximo.\\
+El funcionamiento de la aplicación legada se puede observar en la Figura \ref{fig:automata}.
+
 \newpage
 \section{Implementación del Wrapper}
 
@@ -118,6 +125,7 @@ En el caso de las tareas ``específicas'' se mostrarían de manera análoga con 
 Para poder realizar la comunicación con 3270, inicialmente se había considerado utilizar \textit{WS3270} para realizar la comunicación, pero resultaba demasiado tedioso y generaba varios problemas. Es por ello que finalmente se ha utilizado \textit{s3270}\footnote{\url{http://x3270.bgp.nu/s3270-man.html}}, una herramienta de \textit{screen-scrapping}\footnote{\url{https://x3270.miraheze.org/wiki/Screen_Scraping}} para Linux. \\
 Las funciones utilizadas para trabajar con el \textit{scrapper} se han obtenido de la siguiente \href{https://vebqa.github.io/f3270/release/doxygen/S3270_8java_source.html}{página}.\\
 Para el uso de esta herramienta en Java se han seguido las indicaciones de la memoria, ejecutando el comando de la siguiente manera:
+
 \begin{lstlisting}
 final String commandLine = String.format("%s -model %s-%d %s:%d", s3270Path
 	, type.getType(), mode.getMode(), hostname, port);
@@ -128,9 +136,20 @@ out = new PrintWriter(new OutputStreamWriter(s3270.getOutputStream()
 in = new BufferedReader(new InputStreamReader(s3270.getInputStream()
 	, "ISO-8859-1"));
 \end{lstlisting}
-Se ha seguido un patrón de diseño \textit{Singleton} para garantizar que solo se cree una única conexión con el \textit{Mainframe}, junto a métodos encargados de añadir tareas (tanto específicas como generales) y mostrarlas. Para ello, se escribe en \textit{scrapper} cada uno de los comandos necesarios para realizar las operaciones. Han aparecido una serie de problemas relacionadas con la inserción y lectura de texto, ya que, en ocasiones, el programa enviaba información al \textit{scrapper} antes que este procesara la operación anterior, lo que provocaba sobreescrituras en el buffer. Para solventar este problema, se han añadido retrasos utilizando el comando "Thread.sleep(X)".
 
-\textbf{{\Huge Hola Tambo (y Chusé) esta parte ya es tuya bro. Lo siento.}}
+Se ha seguido un patrón de diseño \textit{Singleton} para garantizar que solo se cree una única conexión con el \textit{Mainframe}, junto a métodos encargados de añadir tareas (tanto específicas como generales) y mostrarlas. Para ello, se escribe en \textit{scrapper} cada uno de los comandos necesarios para realizar las operaciones.\\
+Se ha planteado el \emph{singleton} utilizando la máquina de estados de la Figura \ref{fig:automata}. Todas las operaciones sobre el \emph{singleton} implican que el estado final volverá a ser el inicial (menú tareas.c) para mantener la consistencia en todas las operaciones.\\
+
+Han aparecido una serie de problemas relacionadas con la inserción y lectura de texto, ya que, en ocasiones, el programa enviaba información al \textit{scrapper} antes que este procesara la operación anterior, lo que provocaba sobreescrituras en el buffer. Para solventar este problema, se han añadido retrasos utilizando el comando "Thread.sleep(X)".\\
+
+
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=0.5]{images/automata.jpg}
+\caption{Autómata de la interacción del scrapper con la aplicación legada.}
+\label{fig:automata}
+\end{figure}
+
 
 
 \end{document}
