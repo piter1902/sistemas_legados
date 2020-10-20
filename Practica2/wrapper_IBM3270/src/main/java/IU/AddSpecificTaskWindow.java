@@ -1,6 +1,7 @@
 package IU;
 
 import Models.SpecificTask;
+import Scrapper.S3270Singleton;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,9 +34,12 @@ public class AddSpecificTaskWindow extends JFrame {
             public void actionPerformed(ActionEvent actionEvent) {
                 System.out.println("Saving new General Task.");
                 synchronized (specificTasks) {
-                    specificTasks.add(new SpecificTask(calendarField.getText(), nameField.getText(), descriptionArea.getText()));
+                    SpecificTask task = new SpecificTask(calendarField.getText(), nameField.getText(), descriptionArea.getText());
+                    specificTasks.add(task);
                     table.updateUI();
-                    // TODO: Edit this to save a new Specific Task in tareas.c
+                    // TODO: HAY QUE PROBAR
+                    S3270Singleton s3270Singleton = S3270Singleton.getInstance();
+                    s3270Singleton.addSpecificTask(task);
                 }
                 setVisible(false);
                 dispose();

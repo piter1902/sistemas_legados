@@ -1,6 +1,7 @@
 package IU;
 
 import Models.GeneralTask;
+import Scrapper.S3270Singleton;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,9 +31,12 @@ public class AddGeneralTaskWindow extends JFrame {
             public void actionPerformed(ActionEvent actionEvent) {
                 System.out.println("Saving new General Task.");
                 synchronized (generalTasks) {
-                    generalTasks.add(new GeneralTask(calendarField.getText(), descriptionArea.getText()));
+                    GeneralTask task = new GeneralTask(calendarField.getText(), descriptionArea.getText());
+                    generalTasks.add(task);
                     table.updateUI();
-                    // TODO: Edit this to save a new General Task in tareas.c
+                    // TODO: HAY QUE PROBARLO.
+                    S3270Singleton s3270Singleton = S3270Singleton.getInstance();
+                    s3270Singleton.addGeneralTask(task);
                 }
                 setVisible(false);
                 dispose();

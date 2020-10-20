@@ -1,6 +1,7 @@
 package IU;
 
 import Models.GeneralTask;
+import Scrapper.S3270Singleton;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -16,7 +17,6 @@ public class GeneralTaskWindow extends JFrame {
     public static final int SLEEP_TIME = 5000;
 
     private final List<GeneralTask> generalTasks;
-    private final Thread updater;
 
     private final Container leftContainer;
     private JTable table;
@@ -28,26 +28,9 @@ public class GeneralTaskWindow extends JFrame {
      */
     public GeneralTaskWindow() {
 
-        // TODO: Do some stuff to get DATA
+        // TODO: COMPROBAR SI CHUTA
 
-        generalTasks = new ArrayList<>();
-
-        updater = new Thread(() -> {
-            for (; ; ) {
-                synchronized (generalTasks){
-                    System.out.println("Estoy vivo. Size del vector = " + generalTasks.size());
-                    generalTasks.add(new GeneralTask(String.valueOf(new Random().nextInt(9999)), "Description"));
-                    table.updateUI();
-                }
-                try {
-                    Thread.sleep(SLEEP_TIME);
-                } catch (InterruptedException e) {
-                    System.out.println("Fin del thread updater");
-                    break;
-                }
-            }
-        });
-
+        generalTasks = S3270Singleton.getInstance().getGeneralTasks();
         // Top-level container
         Container cp = getContentPane();
 
@@ -68,13 +51,10 @@ public class GeneralTaskWindow extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
 
-        // Start updater Thread
-        updater.start();
     }
 
     @Override
     public void dispose() {
-        updater.interrupt();
         super.dispose();
     }
 

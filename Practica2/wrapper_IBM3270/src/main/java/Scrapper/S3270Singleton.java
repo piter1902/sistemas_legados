@@ -3,11 +3,11 @@ package Scrapper;
 import Models.GeneralTask;
 import Models.SpecificTask;
 import Render.TextRenderer;
-import jdk.nashorn.api.tree.GotoTree;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -130,6 +130,28 @@ public class S3270Singleton implements Closeable {
         enter1();
     }
 
+    public List<GeneralTask> getGeneralTasks() {
+        s3270.type("2");
+        enter1();
+        s3270.type("1");
+        enter1();
+        String out = getScreenText();
+
+        String tasksPattern = "^TASK [0-9]+: GENERAL .*$";
+        List<String> pantalla = Arrays.asList(out.split("\n"));
+        List<GeneralTask> result = new ArrayList<>();
+        for (String linea : pantalla) {
+            if (linea.matches(tasksPattern)) {
+                String[] lineaStrings = linea.split(" ");
+                result.add(new GeneralTask(lineaStrings[3], lineaStrings[5]));
+            }
+
+        }
+        s3270.type("3");
+        enter1();
+        return result;
+    }
+
     //TODO: Borra esto por dios
     public void temporal() {
         for (Field f : s3270.getScreen().getFields()) {
@@ -168,6 +190,33 @@ public class S3270Singleton implements Closeable {
         }
         s3270.type("3");
         enter1();
+    }
+
+    public List<SpecificTask> getSpecificTasks() {
+        boolean end = true;
+        s3270.type("2");
+        enter1();
+        s3270.type("2");
+        enter1();
+        List<SpecificTask> result = new ArrayList<>();
+        while (end) {
+            String out = getScreenText();
+
+            String tasksPattern = "^TASK [0-9]+: SPECIFIC .*$";
+            List<String> pantalla = Arrays.asList(out.split("\n"));
+            for (String linea : pantalla) {
+                if (linea.matches(tasksPattern)) {
+                    String[] lineaStrings = linea.split(" ");
+                    result.add(new SpecificTask(lineaStrings[3], lineaStrings[4], lineaStrings[5]));
+                }
+                if (end = linea.contains("More")) {
+                    enter1();
+                }
+            }
+        }
+        s3270.type("3");
+        enter1();
+        return result;
     }
 
     private static final String SCREEN_SEPARATOR = "+--------------------------------------------------------------------------------+";

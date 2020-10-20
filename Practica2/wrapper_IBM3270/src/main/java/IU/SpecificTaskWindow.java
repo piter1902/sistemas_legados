@@ -2,6 +2,7 @@ package IU;
 
 import Models.GeneralTask;
 import Models.SpecificTask;
+import Scrapper.S3270Singleton;
 
 import java.util.*;
 import javax.swing.*;
@@ -17,7 +18,6 @@ public class SpecificTaskWindow extends JFrame {
     public static final int SLEEP_TIME = 5000;
 
     private final List<SpecificTask> specificTasks;
-    private final Thread updater;
 
     private final Container leftContainer;
     private JTable table;
@@ -29,26 +29,9 @@ public class SpecificTaskWindow extends JFrame {
      */
     public SpecificTaskWindow() {
 
-        // TODO: Do some stuff to get DATA
+        // TODO: COMPROBAR SI CHUTA
 
-        specificTasks = new ArrayList<>();
-
-        updater = new Thread(() -> {
-            for (; ; ) {
-                synchronized (specificTasks) {
-                    System.out.println("Estoy vivo. Size del vector = " + specificTasks.size());
-                    specificTasks.add(new SpecificTask(String.valueOf(new Random().nextInt(9999)), "Name", "Description"));
-                    table.updateUI();
-                }
-                try {
-                    Thread.sleep(SLEEP_TIME);
-                } catch (InterruptedException e) {
-                    System.out.println("Fin del thread updater");
-                    break;
-                }
-            }
-        });
-
+        specificTasks = S3270Singleton.getInstance().getSpecificTasks();
 
         // Top-level container
         Container cp = getContentPane();
@@ -70,8 +53,6 @@ public class SpecificTaskWindow extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
 
-        // Start updater Thread
-        updater.start();
     }
 
     /**
