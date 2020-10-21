@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+                      http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         version="3.0"
+         metadata-complete="true">
+
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+
+   <!-- Servlets  
+   <servlet>
+        <servlet-name>GetRecords</servlet-name>
+        <servlet-class>servlets.GetRecords</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetRecords</servlet-name>
+        <url-pattern>/getRegisters</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>FilterByName</servlet-name>
+        <servlet-class>servlets.FilterByName</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>FilterByName</servlet-name>
+        <url-pattern>/filterByName</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>FilterByTape</servlet-name>
+        <servlet-class>servlets.FilterByTape</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>FilterByTape</servlet-name>
+        <url-pattern>/filterByTape</url-pattern>
+    </servlet-mapping>-->
+
+</web-app>
