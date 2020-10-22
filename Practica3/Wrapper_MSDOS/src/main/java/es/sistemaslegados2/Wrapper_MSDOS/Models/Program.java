@@ -1,4 +1,4 @@
-package models;
+package es.sistemaslegados2.Wrapper_MSDOS.Models;
 
 public class Program {
     private String name;
