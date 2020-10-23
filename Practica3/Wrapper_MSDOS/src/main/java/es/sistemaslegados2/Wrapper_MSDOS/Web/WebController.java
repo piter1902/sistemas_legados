@@ -21,4 +21,20 @@ public class WebController {
         }
         return new ResponseEntity<>(gson.toJson(p), HttpStatus.OK);
     }
+
+
+    @GetMapping("/filterByName")
+    public ResponseEntity<String> filterByName(@RequestParam(name = "name") String name) {
+        return new ResponseEntity<>("Filtrando para name: " + name, HttpStatus.OK);
+    }
+
+    @GetMapping("/filterByTape")
+    public ResponseEntity<String> filterByTape(@RequestParam(name = "tape") String tape) {
+        return new ResponseEntity<>("Filtrando para tape: " + tape, HttpStatus.OK);
+    }
+
+    @GetMapping("/getRecords")
+    public ResponseEntity<String> getRecords() {
+        return new ResponseEntity<>("No se cuantos registros hay", HttpStatus.OK);
+    }
 }
