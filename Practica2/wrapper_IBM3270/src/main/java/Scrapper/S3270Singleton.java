@@ -3,6 +3,7 @@ package Scrapper;
 import Models.GeneralTask;
 import Models.SpecificTask;
 import Render.TextRenderer;
+import org.apache.log4j.Logger;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -20,27 +21,23 @@ public class S3270Singleton implements Closeable {
     private static S3270Singleton instance;
     private static S3270 s3270;
     private static final int SCREEN_WIDTH_IN_CHARS = 80;
+    private static final Logger logger = Logger.getLogger(S3270Singleton.class);
 
     private S3270Singleton() {
         s3270 = new S3270("s3270", "155.210.152.51", 101, TYPE_3278, MODE_80_24);
-
-        s3270.enter();
-        s3270.enter();
-
+        sleep(2000);
         s3270.updateScreen();
-
+        enter1();
         s3270.type("grupo_02");
         s3270.typeAt("secreto6", 17, 4);
-        enter2();
+        enter1();
+        enter1();
         s3270.type("tareas.c");
-        enter2();
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        enter1();
+        logger.info("Print al iniciar s3270");
+        printScreen();
+        sleep(2000);
         s3270.updateScreen();
-
     }
 
     public static S3270Singleton getInstance() {
@@ -59,25 +56,33 @@ public class S3270Singleton implements Closeable {
         System.out.println(out);
     }
 
+    private void sleep(int time) {
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void enter2() {
         s3270.submitScreen();
+        sleep(100);
         s3270.enter();
+        sleep(100);
         s3270.enter();
         s3270.updateScreen();
     }
 
     private void enter1() {
-        if (s3270.isEOF()) {
+        //Comprobamos que no se ha llegado a fin de pantalla
+        if (s3270.isEOF() || s3270.isEmpty()) {
+            logger.info("Double enter!");
             s3270.enter();
         }
         s3270.submitScreen();
+        sleep(100);
         s3270.enter();
-        try {
-            Thread.sleep(150);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
+        sleep(150);
         s3270.updateScreen();
     }
 
@@ -86,12 +91,23 @@ public class S3270Singleton implements Closeable {
         enter1();
         s3270.type("1");
         enter1();
-
+        if (screenMatches("ASSIGN TASKS")){
+            logger.info("Acceso a agnadir tareas generales correcto...");
+        }else{
+            logger.info("Acceso a agnadir tareas generales FALLIDO!!.");
+            printScreen();
+        }
         s3270.type(generalTask.getDate());
         enter1();
         s3270.type(generalTask.getDescription());
         enter1();
         s3270.type("3");
+        if (screenMatches("MENU PRINCIPAL")){
+            logger.info("Acceso a menu principal correcto ... ");
+        }else{
+            logger.info("Acceso a menu principal FALLIDO!!.");
+            printScreen();
+        }
         enter1();
     }
 
@@ -100,6 +116,12 @@ public class S3270Singleton implements Closeable {
         enter1();
         s3270.type("2");
         enter1();
+        if (screenMatches("ASSIGN TASKS")){
+            logger.info("Acceso a agnadir tareas especificas correcto...");
+        }else{
+            logger.info("Acceso a agnadir tareas especificas FALLIDO!!.");
+            printScreen();
+        }
         s3270.type(specificTask.getDate());
         enter1();
         s3270.type(specificTask.getName());
@@ -108,6 +130,12 @@ public class S3270Singleton implements Closeable {
         s3270.type(specificTask.getDescription());
         enter1();
         s3270.type("3");
+        if (screenMatches("MENU PRINCIPAL")){
+            logger.info("Acceso a menu principal correcto ... ");
+        }else{
+            logger.info("Acceso a menu principal FALLIDO!!.");
+            printScreen();
+        }
         enter1();
     }
 
@@ -135,8 +163,13 @@ public class S3270Singleton implements Closeable {
         enter1();
         s3270.type("1");
         enter1();
+        if (screenMatches("VIEW TASKS")){
+            logger.info("Acceso a mostrar tareas generales correcto...");
+        }else{
+            logger.info("Acceso a mostrar tareas generales FALLIDO!!.");
+            printScreen();
+        }
         String out = getScreenText();
-
         String tasksPattern = "^TASK [0-9]+: GENERAL .*$";
         List<String> pantalla = Arrays.asList(out.split("\n"));
         List<GeneralTask> result = new ArrayList<>();
@@ -149,22 +182,13 @@ public class S3270Singleton implements Closeable {
         }
         s3270.type("3");
         enter1();
-        return result;
-    }
-
-    //TODO: Borra esto por dios
-    public void temporal() {
-        for (Field f : s3270.getScreen().getFields()) {
-            if (f.getText().contains("More")) {
-                for (int i = 1; i < f.getText().length(); i++) {
-                    char temp = s3270.getScreen().charAt(i, 23);
-                    System.out.println(i + "-----" + temp);
-                }
-//                System.out.println(f.getStartX() + " --- " + f.getStartY());
-//                System.out.println(f.getEndX() + " --- " + f.getEndY());
-            }
-
+        if (screenMatches("MENU PRINCIPAL")){
+            logger.info("Acceso a menu principal correcto ... ");
+        }else{
+            logger.info("Acceso a menu principal FALLIDO!!.");
+            printScreen();
         }
+        return result;
     }
 
     public void printSpecificTasks() {
@@ -198,6 +222,12 @@ public class S3270Singleton implements Closeable {
         enter1();
         s3270.type("2");
         enter1();
+        if (screenMatches("VIEW TASKS")){
+            logger.info("Acceso a mostrar tareas especificas correcto...");
+        }else{
+            logger.info("Acceso a mostrar tareas especificas FALLIDO!!.");
+            printScreen();
+        }
         List<SpecificTask> result = new ArrayList<>();
         while (end) {
             String out = getScreenText();
@@ -216,6 +246,12 @@ public class S3270Singleton implements Closeable {
         }
         s3270.type("3");
         enter1();
+        if (screenMatches("MENU PRINCIPAL")){
+            logger.info("Acceso a menu principal correcto ... ");
+        }else{
+            logger.info("Acceso a menu principal FALLIDO!!.");
+            printScreen();
+        }
         return result;
     }
 
@@ -238,29 +274,30 @@ public class S3270Singleton implements Closeable {
         stream.println(SCREEN_SEPARATOR);
     }
 
-    public void printScreen2(PrintStream stream) {
+    //TODO: Borra esto por dios
+    public void temporal() {
+        for (Field f : s3270.getScreen().getFields()) {
+            if (f.getText().trim().length() == 0) {
+                System.out.println("VACIA");
+            }
+            if (getScreenText().trim().length() == 0)
+                System.out.println("VACIAAAA");
 
-        String[] lines = getScreenText().split("\n");
-        final String blanks = "                                                                                ";
-        boolean end = false;
-        stream.println(SCREEN_SEPARATOR);
-
-        for (String line : lines) {
-            end = line.equals("TOTAL TASK");
-            final String fixedLine = (line + blanks).substring(0, SCREEN_WIDTH_IN_CHARS);
-            stream.println(String.format("|%s|", fixedLine));
+            System.out.println(f.getText());
+            System.out.println(f.getStartX() + " --- " + f.getStartY());
+            System.out.println(f.getEndX() + " --- " + f.getEndY());
         }
-        if (!end) {
-            System.out.println("*...................*");
-            s3270.enter();
-            lines = getScreenText().split("\n");
-            for (String line : lines) {
-                end = line.equals("TOTAL TASK");
-                final String fixedLine = (line + blanks).substring(0, SCREEN_WIDTH_IN_CHARS);
-                stream.println(String.format("|%s|", fixedLine));
+    }
+
+    public boolean screenMatches(String match) {
+        final String[] lines = getScreenText().split("\n");
+        for (String line : lines) {
+            if (line.contains(match)) {
+                logger.info("screen MATCHES with " + match);
+                return true;
             }
         }
-        stream.println(SCREEN_SEPARATOR);
+        return false;
     }
 
     @Override

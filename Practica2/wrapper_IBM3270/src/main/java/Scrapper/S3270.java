@@ -519,6 +519,16 @@ public class S3270 {
         }
     }
 
+    public boolean isEmpty() {
+        assertConnected();
+        for (Field f : this.getScreen().getFields()) {
+            if (f.getText().trim().length() != 0)
+                logger.info("Screen isn't empty ... ");
+            return false;
+        }
+        return true;
+    }
+
     public boolean isEOF() {
         assertConnected();
         char estado = this.getScreen().charAt(70, 23);
