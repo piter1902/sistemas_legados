@@ -15,6 +15,8 @@ import java.io.InputStreamReader;
 public class WrapperMsdosApplication {
 
 	public static void main(String[] args) {
+		// Para la correcta inicialización de java.awt.Robot
+		System.setProperty("java.awt.headless", "false");
 		SpringApplication.run(WrapperMsdosApplication.class, args);
 	}
 
