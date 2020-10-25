@@ -1,22 +1,11 @@
 package IU;
 
-import Models.GeneralTask;
-import Models.SpecificTask;
-import Render.TextRenderer;
-import Scrapper.Field;
-import Scrapper.S3270;
 import Scrapper.S3270Singleton;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-
-import static Scrapper.S3270.TerminalMode.MODE_80_24;
-import static Scrapper.S3270.TerminalType.TYPE_3278;
 
 public class Window extends JFrame {
 
@@ -66,35 +55,8 @@ public class Window extends JFrame {
 
 
     public static void main(String[] args) {
-
+        //comenzamos singleton para que aparezcan menos retrasos
+        S3270Singleton.getInstance();
         new Window();
-//        S3270Singleton s3270Singleton = S3270Singleton.getInstance();
-//
-//        s3270Singleton.addGeneralTask(new GeneralTask("1902", "PRUEBA123456"));
-//        s3270Singleton.printGeneralTasks();
-//        s3270Singleton.addGeneralTask(new GeneralTask("2009", "POLLA1"));
-//        s3270Singleton.printGeneralTasks();
-//        s3270Singleton.addGeneralTask(new GeneralTask("2209", "POLLA2"));
-//        s3270Singleton.printGeneralTasks();
-//
-////        s3270Singleton.printSpecificTasks();
-//
-////        System.out.println("*-------------HOLA------------*");
-//        s3270Singleton.addSpecificTask(new SpecificTask("2222", "JUANJO", "Sp1"));
-//        s3270Singleton.addSpecificTask(new SpecificTask("2223", "PEDRO", "Sp2"));
-//        s3270Singleton.addSpecificTask(new SpecificTask("2224", "CHUS", "Sp3"));
-//        s3270Singleton.addSpecificTask(new SpecificTask("2225", "MENA", "Sp4"));
-//
-//        s3270Singleton.printSpecificTasks();
-
-        //        s3270Singleton.printScreen();
-
-//
-//        try {
-//            s3270Singleton.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
     }
 }

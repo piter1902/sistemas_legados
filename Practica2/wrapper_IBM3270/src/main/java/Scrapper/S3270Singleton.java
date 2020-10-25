@@ -34,8 +34,6 @@ public class S3270Singleton implements Closeable {
         enter1();
         s3270.type("tareas.c");
         enter1();
-        logger.info("Print al iniciar s3270");
-        printScreen();
         sleep(2000);
         s3270.updateScreen();
     }
@@ -83,6 +81,12 @@ public class S3270Singleton implements Closeable {
         sleep(100);
         s3270.enter();
         sleep(150);
+        //Esta segunda comprobacion arregla otros casos de fin de pantalla
+        if (s3270.isEOF()) {
+            logger.info("Double enter version 2!");
+            s3270.enter();
+            sleep(100);
+        }
         s3270.updateScreen();
     }
 
@@ -91,9 +95,10 @@ public class S3270Singleton implements Closeable {
         enter1();
         s3270.type("1");
         enter1();
-        if (screenMatches("ASSIGN TASKS")){
+
+        if (screenMatches("ASSIGN TASKS")) {
             logger.info("Acceso a agnadir tareas generales correcto...");
-        }else{
+        } else {
             logger.info("Acceso a agnadir tareas generales FALLIDO!!.");
             printScreen();
         }
@@ -102,13 +107,13 @@ public class S3270Singleton implements Closeable {
         s3270.type(generalTask.getDescription());
         enter1();
         s3270.type("3");
-        if (screenMatches("MENU PRINCIPAL")){
+        enter1();
+        if (screenMatches("MENU PRINCIPAL")) {
             logger.info("Acceso a menu principal correcto ... ");
-        }else{
+        } else {
             logger.info("Acceso a menu principal FALLIDO!!.");
             printScreen();
         }
-        enter1();
     }
 
     public void addSpecificTask(SpecificTask specificTask) {
@@ -116,9 +121,9 @@ public class S3270Singleton implements Closeable {
         enter1();
         s3270.type("2");
         enter1();
-        if (screenMatches("ASSIGN TASKS")){
+        if (screenMatches("ASSIGN TASKS")) {
             logger.info("Acceso a agnadir tareas especificas correcto...");
-        }else{
+        } else {
             logger.info("Acceso a agnadir tareas especificas FALLIDO!!.");
             printScreen();
         }
@@ -126,17 +131,16 @@ public class S3270Singleton implements Closeable {
         enter1();
         s3270.type(specificTask.getName());
         enter1();
-//        temporal();
         s3270.type(specificTask.getDescription());
         enter1();
         s3270.type("3");
-        if (screenMatches("MENU PRINCIPAL")){
+        enter1();
+        if (screenMatches("MENU PRINCIPAL")) {
             logger.info("Acceso a menu principal correcto ... ");
-        }else{
+        } else {
             logger.info("Acceso a menu principal FALLIDO!!.");
             printScreen();
         }
-        enter1();
     }
 
     public void printGeneralTasks() {
@@ -163,9 +167,9 @@ public class S3270Singleton implements Closeable {
         enter1();
         s3270.type("1");
         enter1();
-        if (screenMatches("VIEW TASKS")){
+        if (screenMatches("VIEW TASKS")) {
             logger.info("Acceso a mostrar tareas generales correcto...");
-        }else{
+        } else {
             logger.info("Acceso a mostrar tareas generales FALLIDO!!.");
             printScreen();
         }
@@ -182,9 +186,9 @@ public class S3270Singleton implements Closeable {
         }
         s3270.type("3");
         enter1();
-        if (screenMatches("MENU PRINCIPAL")){
+        if (screenMatches("MENU PRINCIPAL")) {
             logger.info("Acceso a menu principal correcto ... ");
-        }else{
+        } else {
             logger.info("Acceso a menu principal FALLIDO!!.");
             printScreen();
         }
@@ -222,9 +226,9 @@ public class S3270Singleton implements Closeable {
         enter1();
         s3270.type("2");
         enter1();
-        if (screenMatches("VIEW TASKS")){
+        if (screenMatches("VIEW TASKS")) {
             logger.info("Acceso a mostrar tareas especificas correcto...");
-        }else{
+        } else {
             logger.info("Acceso a mostrar tareas especificas FALLIDO!!.");
             printScreen();
         }
@@ -246,9 +250,9 @@ public class S3270Singleton implements Closeable {
         }
         s3270.type("3");
         enter1();
-        if (screenMatches("MENU PRINCIPAL")){
+        if (screenMatches("MENU PRINCIPAL")) {
             logger.info("Acceso a menu principal correcto ... ");
-        }else{
+        } else {
             logger.info("Acceso a menu principal FALLIDO!!.");
             printScreen();
         }

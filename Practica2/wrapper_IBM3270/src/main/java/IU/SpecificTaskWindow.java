@@ -1,10 +1,8 @@
 package IU;
 
-import Models.GeneralTask;
 import Models.SpecificTask;
 import Scrapper.S3270Singleton;
 
-import java.util.*;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;

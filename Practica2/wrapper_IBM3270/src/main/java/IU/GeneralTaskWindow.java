@@ -25,14 +25,13 @@ public class GeneralTaskWindow extends JFrame {
 
     private final Container rightContainer;
 
-    private static final Logger logger = Logger.getLogger(GeneralTaskWindow.class);
+
     /**
      * Public Constructor
      */
     public GeneralTaskWindow() {
 
         // TODO: COMPROBAR SI CHUTA
-        logger.info("Obteniendo general tasks");
         generalTasks = S3270Singleton.getInstance().getGeneralTasks();
         // Top-level container
         Container cp = getContentPane();
