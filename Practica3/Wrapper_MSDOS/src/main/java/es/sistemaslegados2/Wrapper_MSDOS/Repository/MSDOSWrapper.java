@@ -1,10 +1,13 @@
 package es.sistemaslegados2.Wrapper_MSDOS.Repository;
 
+import es.sistemaslegados2.Wrapper_MSDOS.Models.Program;
 import net.sourceforge.tess4j.Tesseract1;
 import net.sourceforge.tess4j.TesseractException;
 import org.springframework.stereotype.Repository;
 
 import javax.imageio.ImageIO;
+import java.util.ArrayList;
+import java.util.List;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -36,6 +39,93 @@ public class MSDOSWrapper {
         }
     }
 
+    public List<Program> getProgramByName(String name) {
+        // Ejecutar DosBox
+        ProcessBuilder dosbox_builder = new ProcessBuilder(DOSBOX_PATH);
+        try {
+            dosbox = dosbox_builder.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (dosbox != null) {
+            sleep(3000);
+            // Para buscar el programa por nombre -> option 7 y N
+            RobotAdapter.type(robot, "7");
+            sleep(300);
+            RobotAdapter.type(robot, "N\n");
+            sleep(100);
+            RobotAdapter.type(robot, name + "\n");
+            sleep(1000);
+            // Obtencion de las coordenadas de la aplicacion legada
+            updateWindowsConst();
+            List<Program> ret = new ArrayList<>();
+            //saveImage(image);
+            // Escaneo OCR de la captura
+            Tesseract1 ocr = new Tesseract1();
+            ocr.setLanguage("./tessdata/spa");
+            String result = null;
+            // contador de maximo de intentos
+            int count = 0;
+            // condicion de fin
+            boolean fin = false;
+            // ultimo id leido
+            int last_id = -1;
+            do {
+                // Captura de pantalla
+                // TODO: cambiar las restricciones width y height
+                BufferedImage image = robot.createScreenCapture(new Rectangle(window_x, window_y, 600, 400));
+                try {
+                    result = ocr.doOCR(image);
+                    for (String l : result.split("\n")) {
+//                        System.err.println(l);
+                        l = l.trim();
+                        if (l.matches("^[0-9]+ .*$")) {
+                            // Salida mostrada {nR - name utilidad cinta:}
+                            // La salida es un programa
+                            // Parseamos la salida
+                            l.replaceAll("[\t ]+", " ");
+                            String[] linea = l.split(" ");
+                            // Minima longitud de la lista.
+                            if (linea.length >= 5) {
+                                if (last_id == Integer.parseInt(linea[0])) {
+                                    // Ha leido dos veces el mismo programa. Salida
+                                    fin = true;
+                                    break;
+                                } else {
+                                    ret.add(new Program(linea[2], linea[3], linea[4], linea[0]));
+                                    last_id = Integer.parseInt(linea[0]);
+                                }
+                            }
+                        } else if (l.contains("NINGUN")) {
+                            fin = true;
+                            break;
+                        }
+                    }
+                } catch (TesseractException e) {
+                    e.printStackTrace();
+                }
+                RobotAdapter.type(robot, "N\n");
+                sleep(1000);
+                count++;
+            } while (!fin && count < 20);
+            RobotAdapter.type(robot, "\n");
+            sleep(100);
+            RobotAdapter.type(robot, "N\n");
+            sleep(100);
+            exitDosBox();
+            return ret;
+        }
+        throw new RuntimeException("Error al iniciar la aplicacion legada");
+    }
+
+    private static void sleep(int milis) {
+        try {
+            Thread.sleep(milis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     public int getRecordNumber() {
         // Ejecutar DosBox
         ProcessBuilder dosbox_builder = new ProcessBuilder(DOSBOX_PATH);
@@ -45,22 +135,13 @@ public class MSDOSWrapper {
             e.printStackTrace();
         }
         if (dosbox != null) {
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            sleep(3000);
             // Para obtener el nº de registros -> Option 4 y arriba a la derecha
             RobotAdapter.type(robot, "4");
-            try {
-                Thread.sleep(300);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            sleep(300);
             // Obtencion de las coordenadas de la aplicacion legada
             updateWindowsConst();
             // Captura de pantalla
-            // TODO: cambiar las restricciones width y height
             BufferedImage image = robot.createScreenCapture(new Rectangle(window_x, window_y, 300, 200));
             //saveImage(image);
             // Escaneo OCR de la captura
@@ -85,11 +166,7 @@ public class MSDOSWrapper {
                     }
                 }
             }
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            sleep(1000);
             RobotAdapter.type(robot, "\n");
             exitDosBox();
             return numRecords;
