@@ -5,8 +5,11 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
+\usepackage{listings}
 \usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
 
+\lstset { frame = single }
 
 \begin{document}
 
@@ -59,19 +62,57 @@ Con esta aplicación el usuario podía introducir nuevos registros que hacían a
 
 \section{Tecnología elegida}
 
+Se ha elegido \emph{Java} como lenguaje de programación para esta tarea. Para implementar el servidor web se ha utilizado el \emph{framework SpringBoot} por su facilidad de uso. Se va a utilizar un servidor de aplicaciones \emph{Apache Tomcat} incluido en el \emph{framework} de \emph{Spring}. Se va a exponer una API REST para obtener los datos del servidor.\\
+Para la creación de la página web y la interacción con la \emph{API REST} del servidor se va a utilizar \emph{Vue.js}, un \emph{framework} de \emph{JavaScript}.\\
 
 \section{Implementación del Wrapper}
 \subsection{Preparación del entorno}
 
-Ficheros de configuración aquí.
+Para la realización de esta práctica se va a utilizar el sistema operativo \emph{Ubuntu}, se debe instalar el emulador \emph{DosBox}. Para ello se ejecutarán las siguientes órdenes:
+
+\begin{lstlisting}
+sudo apt update
+sudo apt -y install dosbox
+\end{lstlisting}
+
+
+En primer lugar se deberá configurar el emulador \emph{DosBox} para que monte el directorio de la aplicación legada en un disco virtual (\emph{C}) y para que ejecute el programa. Para ello se añadirán las siguientes líneas al fichero de configuración ubicado en el directorio \texttt{\$HOME/.dosbox}. Se añadirán las siguiente líneas al fichero de configuración (\texttt{dosbox-0.74-3.conf}) en la sección \texttt{[autoexec]}:
+
+\begin{lstlisting}
+[autoexec]
+# Lines in this section will be run at startup.
+# You can put your MOUNT lines here.
+
+MOUNT C $HOME/.dosbox/c/
+C:
+cd Database
+GWBASIC.BAT
+\end{lstlisting}
+
+Tras eso se va a proceder a crear el directorio \texttt{\$HOME/.dosbox/c} con el contenido de la aplicación legada.\\
+
+Para poder utilizar el reconocimiento de caracteres (\emph{OCR}) se debe instalar la librería \emph{Tesseract} para el Sistema Operativo. Para instalarla se ejecutarán los siguientes comandos:
+
+\begin{lstlisting}
+sudo apt update
+sudo apt -y install tesseract-ocr
+\end{lstlisting}
+
+De cara al reconocimiento de caracteres en las capturas de pantallas se va a utilizar otro binario para conseguir la posición de la ventana del emulador. Se va a proceder a instalar el binario \emph{wmctrl}. Para ello se ejecutarán las siguientes órdenes:
+
+\begin{lstlisting}
+sudo apt update
+sudo apt -y install wmctrl
+\end{lstlisting}
 
 
 \subsection{Frontend del Wrapper}
 
+\textbf{Rellenar con el desarrollo del frontend}
 
 \subsection{Backend del Wrapper}
 
-
+\textbf{Rellenar con el desarrollo del backend}
 
 
 \end{document}
