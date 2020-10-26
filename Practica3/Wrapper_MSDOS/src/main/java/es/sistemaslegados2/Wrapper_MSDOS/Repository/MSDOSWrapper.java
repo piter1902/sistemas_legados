@@ -21,6 +21,8 @@ public class MSDOSWrapper {
     // Final Attributes
     private static final String DOSBOX_PATH = "/usr/bin/dosbox";
     private static final String WMCTRL_PATH = "/usr/bin/wmctrl";
+    private static final String TRAINED_DATA = "./tessdata/spa2";
+    public static final int INITIAL_SLEEP = 5000;
 
     // Attributes
     private Robot robot;
@@ -48,7 +50,7 @@ public class MSDOSWrapper {
             e.printStackTrace();
         }
         if (dosbox != null) {
-            sleep(3000);
+            sleep(INITIAL_SLEEP);
             // Para buscar el programa por nombre -> option 7 y N
             RobotAdapter.type(robot, "7");
             sleep(300);
@@ -62,7 +64,7 @@ public class MSDOSWrapper {
             //saveImage(image);
             // Escaneo OCR de la captura
             Tesseract1 ocr = new Tesseract1();
-            ocr.setLanguage("./tessdata/spa");
+            ocr.setLanguage(TRAINED_DATA);
             String result = null;
             // contador de maximo de intentos
             int count = 0;
@@ -76,8 +78,10 @@ public class MSDOSWrapper {
                 BufferedImage image = robot.createScreenCapture(new Rectangle(window_x, window_y, 600, 400));
                 try {
                     result = ocr.doOCR(image);
+                    // Comprueba que en el pantallazo hay un registro. Si no lo hay -> Terminacion
+                    boolean hay_programa = false;
                     for (String l : result.split("\n")) {
-//                        System.err.println(l);
+                        System.err.println(l);
                         l = l.trim();
                         if (l.matches("^[0-9]+ .*$")) {
                             // Salida mostrada {nR - name utilidad cinta:}
@@ -93,6 +97,7 @@ public class MSDOSWrapper {
                                     break;
                                 } else {
                                     ret.add(new Program(linea[2], linea[3], linea[4], linea[0]));
+                                    hay_programa = true;
                                     last_id = Integer.parseInt(linea[0]);
                                 }
                             }
@@ -101,11 +106,16 @@ public class MSDOSWrapper {
                             break;
                         }
                     }
+                    if(!hay_programa) {
+                        System.err.println("NO HAY PROGRAMA");
+                        fin = true;
+                        break;
+                    }
                 } catch (TesseractException e) {
                     e.printStackTrace();
                 }
                 RobotAdapter.type(robot, "N\n");
-                sleep(1000);
+                sleep(2*1000);
                 count++;
             } while (!fin && count < 20);
             RobotAdapter.type(robot, "\n");
@@ -135,7 +145,7 @@ public class MSDOSWrapper {
             e.printStackTrace();
         }
         if (dosbox != null) {
-            sleep(3000);
+            sleep(INITIAL_SLEEP);
             // Para obtener el nº de registros -> Option 4 y arriba a la derecha
             RobotAdapter.type(robot, "4");
             sleep(300);
@@ -146,7 +156,7 @@ public class MSDOSWrapper {
             //saveImage(image);
             // Escaneo OCR de la captura
             Tesseract1 ocr = new Tesseract1();
-            ocr.setLanguage("./tessdata/spa");
+            ocr.setLanguage(TRAINED_DATA);
             String result = null;
             try {
                 result = ocr.doOCR(image);
