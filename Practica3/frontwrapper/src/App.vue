@@ -1,17 +1,46 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <p class="text-monospace">Número de registros : 777</p>
+    <div class="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
+       <div class="btn-group" role="group" aria-label="Basic example">
+        <button type="button" class="btn btn-secondary">Buscar por nombre</button>
+        <button type="button" class="btn btn-secondary">Buscar por cinta</button>
+      </div>
+      <div class="input-group mx-auto" style="width: 200px;">
+        <div class="input-group-prepend">
+          <div class="input-group-text" id="btnGroupAddon">@</div>
+        </div>
+        <input type="text" class="form-control" placeholder="..." aria-label="Input group example" aria-describedby="btnGroupAddon">
+      </div>
+    </div>
+    <div class="container-fluid">
+      <table class="table">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">Nombre</th>
+            <th scope="col">Tipo</th>
+            <th scope="col">Cinta</th>
+            <th scope="col">Registro</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Mario Bros</th>
+            <td>Arcade</td>
+            <td>45</td>
+            <td>666</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
   }
 }
 </script>
