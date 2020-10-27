@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <p class="text-monospace">Número de registros : 777</p>
+    <p class="text-monospace">Número de registros : {{ numRegistros.num }}</p>
     <div class="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
        <div class="btn-group" role="group" aria-label="Basic example">
         <button type="button" class="btn btn-secondary">Buscar por nombre</button>
@@ -41,6 +41,20 @@
 export default {
   name: 'App',
   components: {
+  },
+  data() {
+    return  {
+      numRegistros: {
+        num: 0
+      }
+    };
+  },
+  created() {
+    // Llamada para obtener el número de registros al incio
+    this.$http.get("http://localhost:8080/getRecords").then(
+      function(response){
+        this.numRegistros.num = response.body.numRegistros
+    });
   }
 }
 </script>
