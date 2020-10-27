@@ -1,18 +1,21 @@
 <template>
   <div id="app">
     <p class="text-monospace">Número de registros : {{ numRegistros.num }}</p>
-    <div class="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
-       <div class="btn-group" role="group" aria-label="Basic example">
-        <button type="button" class="btn btn-secondary">Buscar por nombre</button>
-        <button type="button" class="btn btn-secondary">Buscar por cinta</button>
-      </div>
-      <div class="input-group mx-auto" style="width: 200px;">
+    <div class="btn-toolbar mb-3 mx-auto" style="width: 200px" role="toolbar" aria-label="Toolbar with button groups">
+      <div class="input-group" >
         <div class="input-group-prepend">
-          <div class="input-group-text" id="btnGroupAddon">@</div>
+           <div class="btn-group" role="group">
+            <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">🔎</button>
+            <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+              <a class="dropdown-item" href="#">Buscar por nombre</a>
+              <a class="dropdown-item" href="#">Buscar por cinta</a>
+            </div>
+          </div>
         </div>
         <input type="text" class="form-control" placeholder="..." aria-label="Input group example" aria-describedby="btnGroupAddon">
       </div>
     </div>
+    <br><br><br>
     <div class="container-fluid">
       <table class="table">
         <thead class="thead-dark">
