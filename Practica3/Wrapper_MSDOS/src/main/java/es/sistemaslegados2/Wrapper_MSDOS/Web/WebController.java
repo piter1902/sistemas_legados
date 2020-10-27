@@ -41,7 +41,8 @@ public class WebController {
 
     @GetMapping("/filterByTape")
     public ResponseEntity<String> filterByTape(@RequestParam(name = "tape") String tape) {
-        return new ResponseEntity<>("Filtrando para tape: " + tape, HttpStatus.OK);
+        List<Program> programList = wrapper.getProgramByTape(tape);
+        return new ResponseEntity<>(new Gson().toJson(programList), HttpStatus.OK);
     }
 
     @GetMapping("/getRecords")
