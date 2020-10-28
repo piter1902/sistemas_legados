@@ -7,12 +7,12 @@
            <div class="btn-group" role="group">
             <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">🔎</button>
             <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-              <a class="dropdown-item" href="#">Buscar por nombre</a>
-              <a class="dropdown-item" href="#">Buscar por cinta</a>
+              <a class="dropdown-item" href="#" @click="filterByName(filter)" >Buscar por nombre</a>
+              <a class="dropdown-item" href="#" @click="filterByTape(filter)">Buscar por cinta</a>
             </div>
           </div>
         </div>
-        <input type="text" class="form-control" placeholder="..." aria-label="Input group example" aria-describedby="btnGroupAddon">
+        <input type="text" class="form-control" placeholder="..." aria-label="Input group example" aria-describedby="btnGroupAddon" v-model="filter">
       </div>
     </div>
     <br><br><br>
@@ -27,12 +27,18 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
+          <tr v-for="prog in this.filteredData" :key="prog.registry">
+            <th scope="row">{{ prog.name }}</th>
+            <td>{{ prog.type }}</td>
+            <td>{{ prog.tape }}</td>
+            <td>{{ prog.registry }}</td>
+          </tr>
+          <!-- <tr>
             <th scope="row">Mario Bros</th>
             <td>Arcade</td>
             <td>45</td>
             <td>666</td>
-          </tr>
+          </tr> -->
         </tbody>
       </table>
     </div>
@@ -47,9 +53,11 @@ export default {
   },
   data() {
     return  {
+      filter: "",
       numRegistros: {
         num: 0
-      }
+      },
+      filteredData: []
     };
   },
   created() {
@@ -58,6 +66,32 @@ export default {
       function(response){
         this.numRegistros.num = response.body.numRegistros
     });
+  },
+  methods: {
+    filterByName(name) {
+      console.log("Filtering by name " + name)
+      this.$http.get("http://localhost:8080/filterByName?name=" + name).then(
+        function(response) {
+          if(response.status == 200){
+            // La operacion ha ido bien
+            console.log("La operacion ha ido bien")
+            this.filteredData = response.body
+          }
+        }
+      );
+    },
+    filterByTape(tape) {
+      console.log("Filtering by tape " + tape)
+      this.$http.get("http://localhost:8080/filterByTape?tape=" + tape).then(
+        function(response) {
+          if(response.status == 200){
+            // La operacion ha ido bien
+            console.log("La operacion ha ido bien")
+            this.filteredData = response.body
+          }
+        }
+      );
+    }
   }
 }
 </script>
