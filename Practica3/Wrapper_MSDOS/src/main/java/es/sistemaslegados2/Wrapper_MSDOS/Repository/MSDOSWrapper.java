@@ -65,9 +65,10 @@ public class MSDOSWrapper {
             // Escaneo OCR de la captura
             Tesseract1 ocr = new Tesseract1();
             ocr.setLanguage(TRAINED_DATA);
+            ocr.setTessVariable("user_defined_dpi", "70");
             String result = null;
             do {
-                BufferedImage image = robot.createScreenCapture(new Rectangle(window_x, window_y, 600, 400));
+                BufferedImage image = robot.createScreenCapture(new Rectangle(window_x, window_y, 640, 400));
                 try {
                     result = ocr.doOCR(image);
                 } catch (TesseractException e) {
@@ -78,24 +79,45 @@ public class MSDOSWrapper {
                         //Nº NOMBRE TIPO CINTA REGISTRO
                         line = line.replaceAll("[\t ]+", " ").trim();
                         if (line.matches("^[0-9]+ .*$")) {
-//                            System.err.println(line);
+                            //System.err.println(line);
                             //Es una linea de registro
                             String[] separados = line.split(" ");
                             if (separados.length >= 5) {
-                                System.err.println(new Gson().toJson(separados));
-                                if (separados[separados.length - 2].equals(tape)) {
-                                    System.err.println(new Gson().toJson(separados));
-                                    ret.add(new Program(separados[1], separados[2], separados[3], separados[4]));
+                                //System.err.println(new Gson().toJson(separados));
+                                if (separados[separados.length - 2].matches(tape + "-?")) {
+                                    //Esta comprobación es igual para todos casos ya que tape esta en length - 2
+                                    switch (separados.length) {
+                                        case 5:
+                                            System.err.println("Añadido de 5 -> " + new Gson().toJson(separados));
+                                            ret.add(new Program(separados[1], separados[2], separados[3], separados[4]));
+                                            break;
+                                        case 6:
+                                            System.err.println("Añadido de 6 -> " + new Gson().toJson(separados));
+                                            String name = separados[1] + " " + separados[2];
+                                            ret.add(new Program(name, separados[3], separados[4], separados[5]));
+                                            break;
+                                        case 7:
+                                            System.err.println("Añadido de 7 -> " + new Gson().toJson(separados));
+                                            name = separados[1] + " " + separados[2] + " " + separados[3];
+                                            ret.add(new Program(name, separados[4], separados[5], separados[6]));
+                                            break;
+                                        default:
+                                            System.err.println("MUCHO TEXTO POR DIOS -> " + new Gson().toJson(separados));
+                                    }
+                                } else {
+                                    System.err.println("NO Añadido -> " + new Gson().toJson(separados));
                                 }
+                            } else {
+                                System.err.println("Longitud invalida " + separados.length + " --- " + new Gson().toJson(separados));
                             }
                         }
                     }
                 }
 
                 RobotAdapter.type(robot, " ");
-                sleep(100);
+                sleep(1 * 1000);
                 //Se comprueba si aparece "MENU" tras dar al espacio
-                image = robot.createScreenCapture(new Rectangle(window_x, window_y, 600, 400));
+                image = robot.createScreenCapture(new Rectangle(window_x, window_y, 640, 400));
 //                saveImage(image, "imagen_menu_" + new Random().nextInt() + ".jpg");
                 try {
                     result = ocr.doOCR(image);
@@ -133,6 +155,8 @@ public class MSDOSWrapper {
             // Escaneo OCR de la captura
             Tesseract1 ocr = new Tesseract1();
             ocr.setLanguage(TRAINED_DATA);
+            ocr.setTessVariable("user_defined_dpi", "70");
+
             String result = null;
             // contador de maximo de intentos
             int count = 0;
@@ -155,19 +179,36 @@ public class MSDOSWrapper {
                             // Salida mostrada {nR - name utilidad cinta:}
                             // La salida es un programa
                             // Parseamos la salida
-                            l.replaceAll("[\t ]+", " ");
+                            l = l.replaceAll("[\t ]+", " ");
                             String[] linea = l.split(" ");
-                            // Minima longitud de la lista.
                             if (linea.length >= 5) {
                                 if (last_id == Integer.parseInt(linea[0])) {
                                     // Ha leido dos veces el mismo programa. Salida
                                     fin = true;
                                     break;
                                 } else {
+                                    switch (linea.length) {
+                                        case 5:
+                                            System.err.println("Añadido de 5 -> " + new Gson().toJson(linea));
+                                            ret.add(new Program(linea[2], linea[3], linea[4], linea[0]));
+                                            break;
+                                        case 6:
+                                            System.err.println("Añadido de 6 -> " + new Gson().toJson(linea));
+                                            String prog_name = linea[2] + " " + linea[3];
+                                            ret.add(new Program(prog_name, linea[4], linea[5], linea[0]));
+                                            break;
+                                        case 7:
+                                            System.err.println("Añadido de 7 -> " + new Gson().toJson(linea));
+                                            prog_name = linea[2] + " " + linea[3] + " " + linea[4];
+                                            ret.add(new Program(prog_name, linea[5], linea[6], linea[0]));
+                                            break;
+                                    }
+
                                     ret.add(new Program(linea[2], linea[3], linea[4], linea[0]));
                                     hay_programa = true;
                                     last_id = Integer.parseInt(linea[0]);
                                 }
+                                // Minima longitud de la lista.
                             }
                         } else if (l.contains("NINGUN")) {
                             fin = true;
@@ -193,7 +234,10 @@ public class MSDOSWrapper {
             exitDosBox();
             return ret;
         }
-        throw new RuntimeException("Error al iniciar la aplicacion legada");
+        throw new
+
+                RuntimeException("Error al iniciar la aplicacion legada");
+
     }
 
     private static void sleep(int milis) {
@@ -225,6 +269,7 @@ public class MSDOSWrapper {
             // Escaneo OCR de la captura
             Tesseract1 ocr = new Tesseract1();
             ocr.setLanguage(TRAINED_DATA);
+            ocr.setTessVariable("user_defined_dpi", "70");
             String result = null;
             try {
                 result = ocr.doOCR(image);
