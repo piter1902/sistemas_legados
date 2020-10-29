@@ -204,7 +204,6 @@ public class MSDOSWrapper {
                                             break;
                                     }
 
-                                    ret.add(new Program(linea[2], linea[3], linea[4], linea[0]));
                                     hay_programa = true;
                                     last_id = Integer.parseInt(linea[0]);
                                 }
