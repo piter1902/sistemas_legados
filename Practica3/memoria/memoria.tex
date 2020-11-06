@@ -9,7 +9,7 @@
 \usepackage{listings}
 \usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
 
-\lstset { frame = single }
+\lstset { frame = single, breaklines = true }
 
 \begin{document}
 
@@ -108,12 +108,17 @@ sudo apt -y install wmctrl
 
 \subsection{Frontend del Wrapper}
 
-Para la realización  de la parte del frontend se ha utilizado \emph{Vue.js}, un framework de javascript de código abierto que permite la construcción de interfaces de usuario de una manera sencilla y agradable. \\ 
-Este framework nos permite mostrar el contenido de manera dinámica en la página web a través de llamadas a la API REST del servidor.\\
-Para la elaboración del código en HTML, se ha utilizado la herramienta \emph{Bootstrap}, de código abierto y de uso gratuito que dispone de plantillas HTML y CSS para interfaces de usuario que permite que éstas sean usables y accesibles. Esta herramienta cuenta con plantillas de todo tipo desde distintas estructuras como pueden ser listas, tablas, filas o columnas hasta botones ya diseñados, lo que ha permitido que la implementación haya sido tanto poco costosa como intuitiva para el usuario. \\
-Para el proceso de desarrollo se ha utilizado la herramienta \emph{npm}, que es un gestor de paquetes para Javascript. Sirve para instalar y gestionar versiones de paquetes y librerías js y permite ver en tiempo real el resultado de la página web en un navegador web tan solo guardando los cambios efectuados en el código.
+Para la realización de la parte del \emph{frontend} se ha utilizado \emph{Vue.js}, un \emph{framework} de \emph{JavaScript} de código abierto que permite la construcción de interfaces de usuario de una manera sencilla y agradable. \\ 
+Este \emph{framework} nos permite mostrar el contenido de manera dinámica en la página web a través de llamadas a la \emph{API REST} del servidor.\\
+Para la elaboración del código en \emph{HTML}, se ha utilizado la herramienta \emph{Bootstrap}, de código abierto y de uso gratuito que dispone de plantillas \emph{HTML} y \emph{CSS} para interfaces de usuario que permite que éstas sean usables y accesibles. Esta herramienta cuenta con plantillas de todo tipo desde distintas estructuras como pueden ser listas, tablas, filas o columnas hasta botones ya diseñados, lo que ha permitido que la implementación haya sido tanto poco costosa como intuitiva para el usuario.\\
+Para el proceso de desarrollo se ha utilizado la herramienta \texttt{npm}, que es un gestor de dependencias de \emph{JavaScript}. Sirve para instalar y gestionar versiones de paquetes y librerías, y permite ver en tiempo real el resultado de la página web en un navegador web tan solo guardando los cambios efectuados en el código.\\
 
-\textbf{Metemos captura de como queda la página???}
+\textbf{Metemos captura de como queda la página??? SI}\\
+
+Para integrar este \emph{frontend} con el código del servidor de \emph{backend} se ha creado un \emph{script BASH} para compilar y copiar el resultado de este proyecto al servidor \emph{backend}. El código del \emph{script} es el mostrado en el código \ref{list:copyToTomcat}.
+
+\lstinputlisting[label=list:copyToTomcat]{listings/copyToTomcat.sh}
+
 \subsection{Backend del Wrapper}
 
 \textbf{Rellenar con el desarrollo del backend}
