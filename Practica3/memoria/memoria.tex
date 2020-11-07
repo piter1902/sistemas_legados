@@ -113,7 +113,7 @@ Este \emph{framework} nos permite mostrar el contenido de manera dinámica en la
 Para la elaboración del código en \emph{HTML}, se ha utilizado la herramienta \emph{Bootstrap}, de código abierto y de uso gratuito que dispone de plantillas \emph{HTML} y \emph{CSS} para interfaces de usuario que permite que éstas sean usables y accesibles. Esta herramienta cuenta con plantillas de todo tipo desde distintas estructuras como pueden ser listas, tablas, filas o columnas hasta botones ya diseñados, lo que ha permitido que la implementación haya sido tanto poco costosa como intuitiva para el usuario.\\
 Para el proceso de desarrollo se ha utilizado la herramienta \texttt{npm}, que es un gestor de dependencias de \emph{JavaScript}. Sirve para instalar y gestionar versiones de paquetes y librerías, y permite ver en tiempo real el resultado de la página web en un navegador web tan solo guardando los cambios efectuados en el código.\\
 
-\textbf{Metemos captura de como queda la página??? SI}\\
+\textbf{Metemos captura de como queda la página??? {\Huge SI}}\\
 
 Para integrar este \emph{frontend} con el código del servidor de \emph{backend} se ha creado un \emph{script BASH} para compilar y copiar el resultado de este proyecto al servidor \emph{backend}. El código del \emph{script} es el mostrado en el código \ref{list:copyToTomcat}.
 
@@ -121,8 +121,14 @@ Para integrar este \emph{frontend} con el código del servidor de \emph{backend}
 
 \subsection{Backend del Wrapper}
 El lenguaje utilizado para la realización de la práctica ha sido \textit{Java}, ya que, además de ser un lenguaje muy flexible y cómodo para los integrantes del grupo, se tiene experiencia con las herramientas que se utilizarán durante el desarrollo de la práctica.\\
+{\Huge \textbf{Esto es redundante porque se ha comentado en el apartado de \emph{Tecnología elegida}.}}\\
+
 Para la realización de la parte del \textit{Backend} se ha utilizado el \textit{framework SpringBoot}. Se ha escogido esta tecnología principalmente debido a que \textit{Spring} incluye un servidor \textit{apache Tomcat}, lo que facilita mucho su configuración y despliegue. Para la integración de \textit{Spring} se ha utilizado \textit{Gradle}, un gestor de dependencias simple y fácil de utilizar que se ha utilizado anteriormente en otras asignaturas.\\
 \textbf{COMENTAR ALGO MÁS DE LAS TECNOLOGÍAS?}\\
+
+{\Huge \textbf{Comentar el como utilizamos los binarios \texttt{wmctrl} (qué hace este comando...) y \texttt{dosbox} en el servidor (cuanto tiempo se espera desde que se lanza).}}\\
+
+{\Huge \textbf{Comenta el como se estructura la \emph{API REST}. Comenta también la clase \texttt{RobotAdapter} (y sobretodo la página de internet de donde sacamos el código, estará en discord). Comenta los problemas del \emph{OCR} y di que intentamos utilizar otro \emph{traineddata} (pedir el enlace a Pedro si no) pero que al final utilizamos el del enunciado de la práctica. }}\\
 
 Como se ha mencionado anteriormente, se expone una \textit{API REST} mediante la cual el cliente puede acceder a distintos recursos proporcionados por el servidor.\\
 La comunicación entre el servidor y el programa \textit{DosBox} se realiza mediante la clase \textit{Robot} de \textit{Java} (java.awt.Robot). De esta manera se permite generar eventos de ratón y teclado en el servidor, comunicandose de esta manera con el emulador \textit{DosBox}. \\
