@@ -33,6 +33,7 @@ public class GeneralTaskWindow extends JFrame {
 
         // TODO: COMPROBAR SI CHUTA
         generalTasks = S3270Singleton.getInstance().getGeneralTasks();
+        System.err.println("Gen Task devueltas: " + generalTasks);
         // Top-level container
         Container cp = getContentPane();
 

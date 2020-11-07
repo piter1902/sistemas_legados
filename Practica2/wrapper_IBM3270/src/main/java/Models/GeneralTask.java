@@ -77,4 +77,12 @@ public class GeneralTask implements Task {
     public int hashCode() {
         return Objects.hash(getDate(), description);
     }
+
+    @Override
+    public String toString() {
+        return "GeneralTask{" +
+                "date='" + date + '\'' +
+                ", description='" + description + '\'' +
+                '}';
+    }
 }

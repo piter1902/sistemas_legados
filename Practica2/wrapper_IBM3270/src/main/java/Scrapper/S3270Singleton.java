@@ -75,19 +75,26 @@ public class S3270Singleton implements Closeable {
         //Comprobamos que no se ha llegado a fin de pantalla
         if (s3270.isEOF() || s3270.isEmpty()) {
             logger.info("Double enter!");
+            s3270.submitScreen();
+            sleep(100);
             s3270.enter();
+            sleep(150);
+            s3270.updateScreen();
         }
         s3270.submitScreen();
         sleep(100);
         s3270.enter();
         sleep(150);
+        s3270.updateScreen();
         //Esta segunda comprobacion arregla otros casos de fin de pantalla
         if (s3270.isEOF()) {
             logger.info("Double enter version 2!");
-            s3270.enter();
+            s3270.submitScreen();
             sleep(100);
+            s3270.enter();
+            sleep(150);
+            s3270.updateScreen();
         }
-        s3270.updateScreen();
     }
 
     public void addGeneralTask(GeneralTask generalTask) {
@@ -121,7 +128,7 @@ public class S3270Singleton implements Closeable {
         enter1();
         s3270.type("2");
         enter1();
-        if (screenMatches("ASSIGN TASKS")) {
+        if (screenMatches("ENTER DATE")) {
             logger.info("Acceso a agnadir tareas especificas correcto...");
         } else {
             logger.info("Acceso a agnadir tareas especificas FALLIDO!!.");
