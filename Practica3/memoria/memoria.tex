@@ -120,8 +120,15 @@ Para integrar este \emph{frontend} con el código del servidor de \emph{backend}
 \lstinputlisting[language=sh, label=list:copyToTomcat]{listings/copyToTomcat.sh}
 
 \subsection{Backend del Wrapper}
+El lenguaje utilizado para la realización de la práctica ha sido \textit{Java}, ya que, además de ser un lenguaje muy flexible y cómodo para los integrantes del grupo, se tiene experiencia con las herramientas que se utilizarán durante el desarrollo de la práctica.\\
+Para la realización de la parte del \textit{Backend} se ha utilizado el \textit{framework SpringBoot}. Se ha escogido esta tecnología principalmente debido a que \textit{Spring} incluye un servidor \textit{apache Tomcat}, lo que facilita mucho su configuración y despliegue. Para la integración de \textit{Spring} se ha utilizado \textit{Gradle}, un gestor de dependencias simple y fácil de utilizar que se ha utilizado anteriormente en otras asignaturas.\\
+\textbf{COMENTAR ALGO MÁS DE LAS TECNOLOGÍAS?}\\
 
-\textbf{Rellenar con el desarrollo del backend}
+Como se ha mencionado anteriormente, se expone una \textit{API REST} mediante la cual el cliente puede acceder a distintos recursos proporcionados por el servidor.\\
+La comunicación entre el servidor y el programa \textit{DosBox} se realiza mediante la clase \textit{Robot} de \textit{Java} (java.awt.Robot). De esta manera se permite generar eventos de ratón y teclado en el servidor, comunicandose de esta manera con el emulador \textit{DosBox}. \\
+Para obtener y procesar la respuesta del emulador, se utiliza \textit{Tesseract}, una herramienta de reconocimiento de carácteres (\textit{OCR}). Inicialmente se ha utilizado el \textit{dataset} adjuntado con los archivos de la práctica, el cual no generaba buenos resultados, por lo que finalmente se ha utilizado otro conjunto de datos de entrenamiento obtenido de \textit{Github}. Aún así, algunas palabras y carácteres no se reconocen de forma correcta por el \textit{OCR}, por lo que los resultados pueden ser erróneos en ocasiones. \\
+
+
 
 
 \end{document}
