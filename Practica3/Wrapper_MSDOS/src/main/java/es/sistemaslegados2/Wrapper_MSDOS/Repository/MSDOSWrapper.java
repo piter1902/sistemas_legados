@@ -65,10 +65,14 @@ public class MSDOSWrapper {
             // Escaneo OCR de la captura
             Tesseract1 ocr = new Tesseract1();
             ocr.setLanguage(TRAINED_DATA);
+            //OCR congifuration
+            ocr.setTessVariable("preserve_interword_spaces", "1"); //De esta manera mantiene tabulaciones
             ocr.setTessVariable("user_defined_dpi", "70");
             String result = null;
+            sleep(1 * 1000);
             do {
                 BufferedImage image = robot.createScreenCapture(new Rectangle(window_x, window_y, 640, 400));
+//                saveImage(image, "imagen_menu_" + new Random().nextInt() + ".jpg");
                 try {
                     result = ocr.doOCR(image);
                 } catch (TesseractException e) {
@@ -77,15 +81,17 @@ public class MSDOSWrapper {
                 if (result != null) {
                     for (String line : result.split("\n")) {
                         //Nº NOMBRE TIPO CINTA REGISTRO
-                        line = line.replaceAll("[\t ]+", " ").trim();
+//                      line = line.replaceAll("[\t ]+", " ").trim();
+                        line = line.trim();
                         if (line.matches("^[0-9]+ .*$")) {
                             //System.err.println(line);
                             //Es una linea de registro
-                            String[] separados = line.split(" ");
+                            String[] separados = line.split("\\s{2,}");
                             if (separados.length >= 5) {
-                                //System.err.println(new Gson().toJson(separados));
+                                System.err.println("Tenemos: " + new Gson().toJson(separados));
                                 if (separados[separados.length - 2].matches(tape + "-?")) {
-                                    //Esta comprobación es igual para todos casos ya que tape esta en length - 2
+                                    //Esta comprobación es igual para todos casos ya que tape esta en length - 1
+                                    // WARNING: Siempre deberia entrar en case 5
                                     switch (separados.length) {
                                         case 5:
                                             System.err.println("Añadido de 5 -> " + new Gson().toJson(separados));
@@ -105,7 +111,7 @@ public class MSDOSWrapper {
                                             System.err.println("MUCHO TEXTO POR DIOS -> " + new Gson().toJson(separados));
                                     }
                                 } else {
-                                    System.err.println("NO Añadido -> " + new Gson().toJson(separados));
+                                    System.err.println("NO Añadido -> " + new Gson().toJson(separados) + " : " + separados[separados.length-2]);
                                 }
                             } else {
                                 System.err.println("Longitud invalida " + separados.length + " --- " + new Gson().toJson(separados));
@@ -155,6 +161,8 @@ public class MSDOSWrapper {
             // Escaneo OCR de la captura
             Tesseract1 ocr = new Tesseract1();
             ocr.setLanguage(TRAINED_DATA);
+            //OCR congifuration
+            ocr.setTessVariable("preserve_interword_spaces", "1"); //De esta manera mantiene tabulaciones
             ocr.setTessVariable("user_defined_dpi", "70");
 
             String result = null;
@@ -172,35 +180,43 @@ public class MSDOSWrapper {
                     result = ocr.doOCR(image);
                     // Comprueba que en el pantallazo hay un registro. Si no lo hay -> Terminacion
                     boolean hay_programa = false;
+                    System.err.println("Resultado: " + result);
                     for (String l : result.split("\n")) {
-                        System.err.println(l);
+
                         l = l.trim();
                         if (l.matches("^[0-9]+ .*$")) {
+
                             // Salida mostrada {nR - name utilidad cinta:}
                             // La salida es un programa
                             // Parseamos la salida
-                            l = l.replaceAll("[\t ]+", " ");
-                            String[] linea = l.split(" ");
-                            if (linea.length >= 5) {
+                            //l = l.replaceAll("[\t ]+", " ");
+                            //TODO: Probar si funciona siempre o casi siempre bien
+                            String[] linea = l.split("\\s{2,}"); //Separamos los disitntos campos
+                            for (String prueba : linea) {
+                                System.err.println("Parte: " + prueba);
+                            }
+                            if (linea.length >= 4) {
                                 if (last_id == Integer.parseInt(linea[0])) {
                                     // Ha leido dos veces el mismo programa. Salida
+                                    System.err.println("Lee dos veces el mismo programa: " + last_id + " vs " + Integer.parseInt(linea[0]));
                                     fin = true;
                                     break;
                                 } else {
+                                    //Deberia meterse siempre en el caso 4. Por si acaso se ha dejado el resto de casos
                                     switch (linea.length) {
-                                        case 5:
+                                        case 4:
                                             System.err.println("Añadido de 5 -> " + new Gson().toJson(linea));
-                                            ret.add(new Program(linea[2], linea[3], linea[4], linea[0]));
+                                            ret.add(new Program(linea[1], linea[2], linea[3], linea[0]));
+                                            break;
+                                        case 5:
+                                            System.err.println("Añadido de 6 -> " + new Gson().toJson(linea));
+                                            String prog_name = linea[1] + " " + linea[2];
+                                            ret.add(new Program(prog_name, linea[3], linea[4], linea[0]));
                                             break;
                                         case 6:
-                                            System.err.println("Añadido de 6 -> " + new Gson().toJson(linea));
-                                            String prog_name = linea[2] + " " + linea[3];
-                                            ret.add(new Program(prog_name, linea[4], linea[5], linea[0]));
-                                            break;
-                                        case 7:
                                             System.err.println("Añadido de 7 -> " + new Gson().toJson(linea));
-                                            prog_name = linea[2] + " " + linea[3] + " " + linea[4];
-                                            ret.add(new Program(prog_name, linea[5], linea[6], linea[0]));
+                                            prog_name = linea[1] + " " + linea[2] + " " + linea[3];
+                                            ret.add(new Program(prog_name, linea[4], linea[5], linea[0]));
                                             break;
                                     }
 
@@ -208,8 +224,11 @@ public class MSDOSWrapper {
                                     last_id = Integer.parseInt(linea[0]);
                                 }
                                 // Minima longitud de la lista.
+                            } else {
+                                System.err.println("Linea muy corta: " + new Gson().toJson(linea));
                             }
                         } else if (l.contains("NINGUN")) {
+                            System.err.println("CONTIENE 'NINGUN' ...");
                             fin = true;
                             break;
                         }
