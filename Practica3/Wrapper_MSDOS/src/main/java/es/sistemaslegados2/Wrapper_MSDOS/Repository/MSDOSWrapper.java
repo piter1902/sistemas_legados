@@ -7,15 +7,14 @@ import net.sourceforge.tess4j.TesseractException;
 import org.springframework.stereotype.Repository;
 
 import javax.imageio.ImageIO;
-import java.util.ArrayList;
-import java.util.List;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Random;
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public class MSDOSWrapper {
@@ -174,7 +173,6 @@ public class MSDOSWrapper {
             int last_id = -1;
             do {
                 // Captura de pantalla
-                // TODO: cambiar las restricciones width y height
                 BufferedImage image = robot.createScreenCapture(new Rectangle(window_x, window_y, 600, 400));
                 try {
                     result = ocr.doOCR(image);
@@ -190,7 +188,6 @@ public class MSDOSWrapper {
                             // La salida es un programa
                             // Parseamos la salida
                             //l = l.replaceAll("[\t ]+", " ");
-                            //TODO: Probar si funciona siempre o casi siempre bien
                             String[] linea = l.split("\\s{2,}"); //Separamos los disitntos campos
                             for (String prueba : linea) {
                                 System.err.println("Parte: " + prueba);
@@ -252,10 +249,7 @@ public class MSDOSWrapper {
             exitDosBox();
             return ret;
         }
-        throw new
-
-                RuntimeException("Error al iniciar la aplicacion legada");
-
+        throw new RuntimeException("Error al iniciar la aplicacion legada");
     }
 
     private static void sleep(int milis) {
