@@ -2,8 +2,8 @@ package es.sistemaslegados2.Wrapper_MSDOS.Repository;
 
 import com.google.gson.Gson;
 import es.sistemaslegados2.Wrapper_MSDOS.Models.Program;
-import net.sourceforge.tess4j.Tesseract1;
-import net.sourceforge.tess4j.TesseractException;
+import es.sistemaslegados2.Wrapper_MSDOS.OCR.OCRInterface;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.imageio.ImageIO;
@@ -31,6 +31,10 @@ public class MSDOSWrapper {
     private Process dosbox;
     private int window_x;
     private int window_y;
+
+    // OCR
+    @Autowired
+    private OCRInterface ocr;
 
 
     public MSDOSWrapper() {
@@ -61,22 +65,23 @@ public class MSDOSWrapper {
             // Obtencion de las coordenadas de la aplicacion legada
             updateWindowsConst();
             //saveImage(image);
-            // Escaneo OCR de la captura
-            Tesseract1 ocr = new Tesseract1();
-            ocr.setLanguage(TRAINED_DATA);
-            //OCR congifuration
-            ocr.setTessVariable("preserve_interword_spaces", "1"); //De esta manera mantiene tabulaciones
-            ocr.setTessVariable("user_defined_dpi", "70");
+//            // Escaneo OCR de la captura
+//            Tesseract1 ocr = new Tesseract1();
+//            ocr.setLanguage(TRAINED_DATA);
+//            //OCR congifuration
+//            ocr.setTessVariable("preserve_interword_spaces", "1"); //De esta manera mantiene tabulaciones
+//            ocr.setTessVariable("user_defined_dpi", "70");
             String result = null;
             sleep(1 * 1000);
             do {
                 BufferedImage image = robot.createScreenCapture(new Rectangle(window_x, window_y, 640, 400));
 //                saveImage(image, "imagen_menu_" + new Random().nextInt() + ".jpg");
-                try {
-                    result = ocr.doOCR(image);
-                } catch (TesseractException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    result = ocr.doOCR(image);
+//                } catch (TesseractException e) {
+//                    e.printStackTrace();
+//                }
+                result = ocr.getText(image);
                 if (result != null) {
                     for (String line : result.split("\n")) {
                         //Nº NOMBRE TIPO CINTA REGISTRO
@@ -124,11 +129,12 @@ public class MSDOSWrapper {
                 //Se comprueba si aparece "MENU" tras dar al espacio
                 image = robot.createScreenCapture(new Rectangle(window_x, window_y, 640, 400));
 //                saveImage(image, "imagen_menu_" + new Random().nextInt() + ".jpg");
-                try {
-                    result = ocr.doOCR(image);
-                } catch (TesseractException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    result = ocr.doOCR(image);
+//                } catch (TesseractException e) {
+//                    e.printStackTrace();
+//                }
+                result = ocr.getText(image);
             } while (!result.trim().matches("M *E *N *U") && !result.trim().contains("ACABAR"));
             System.err.println("---> Salida del bucle");
             exitDosBox();
@@ -158,12 +164,11 @@ public class MSDOSWrapper {
             List<Program> ret = new ArrayList<>();
             //saveImage(image);
             // Escaneo OCR de la captura
-            Tesseract1 ocr = new Tesseract1();
-            ocr.setLanguage(TRAINED_DATA);
-            //OCR congifuration
-            ocr.setTessVariable("preserve_interword_spaces", "1"); //De esta manera mantiene tabulaciones
-            ocr.setTessVariable("user_defined_dpi", "70");
-
+//            Tesseract1 ocr = new Tesseract1();
+//            ocr.setLanguage(TRAINED_DATA);
+//            //OCR congifuration
+//            ocr.setTessVariable("preserve_interword_spaces", "1"); //De esta manera mantiene tabulaciones
+//            ocr.setTessVariable("user_defined_dpi", "70");
             String result = null;
             // contador de maximo de intentos
             int count = 0;
@@ -174,69 +179,65 @@ public class MSDOSWrapper {
             do {
                 // Captura de pantalla
                 BufferedImage image = robot.createScreenCapture(new Rectangle(window_x, window_y, 600, 400));
-                try {
-                    result = ocr.doOCR(image);
-                    // Comprueba que en el pantallazo hay un registro. Si no lo hay -> Terminacion
-                    boolean hay_programa = false;
-                    System.err.println("Resultado: " + result);
-                    for (String l : result.split("\n")) {
+                // result = ocr.doOCR(image);
+                result = ocr.getText(image);
+                // Comprueba que en el pantallazo hay un registro. Si no lo hay -> Terminacion
+                boolean hay_programa = false;
+                System.err.println("Resultado: " + result);
+                for (String l : result.split("\n")) {
+                    l = l.trim();
+                    if (l.matches("^[0-9]+ .*$")) {
 
-                        l = l.trim();
-                        if (l.matches("^[0-9]+ .*$")) {
-
-                            // Salida mostrada {nR - name utilidad cinta:}
-                            // La salida es un programa
-                            // Parseamos la salida
-                            //l = l.replaceAll("[\t ]+", " ");
-                            String[] linea = l.split("\\s{2,}"); //Separamos los disitntos campos
-                            for (String prueba : linea) {
-                                System.err.println("Parte: " + prueba);
-                            }
-                            if (linea.length >= 4) {
-                                if (last_id == Integer.parseInt(linea[0])) {
-                                    // Ha leido dos veces el mismo programa. Salida
-                                    System.err.println("Lee dos veces el mismo programa: " + last_id + " vs " + Integer.parseInt(linea[0]));
-                                    fin = true;
-                                    break;
-                                } else {
-                                    //Deberia meterse siempre en el caso 4. Por si acaso se ha dejado el resto de casos
-                                    switch (linea.length) {
-                                        case 4:
-                                            System.err.println("Añadido de 5 -> " + new Gson().toJson(linea));
-                                            ret.add(new Program(linea[1], linea[2], linea[3], linea[0]));
-                                            break;
-                                        case 5:
-                                            System.err.println("Añadido de 6 -> " + new Gson().toJson(linea));
-                                            String prog_name = linea[1] + " " + linea[2];
-                                            ret.add(new Program(prog_name, linea[3], linea[4], linea[0]));
-                                            break;
-                                        case 6:
-                                            System.err.println("Añadido de 7 -> " + new Gson().toJson(linea));
-                                            prog_name = linea[1] + " " + linea[2] + " " + linea[3];
-                                            ret.add(new Program(prog_name, linea[4], linea[5], linea[0]));
-                                            break;
-                                    }
-
-                                    hay_programa = true;
-                                    last_id = Integer.parseInt(linea[0]);
-                                }
-                                // Minima longitud de la lista.
-                            } else {
-                                System.err.println("Linea muy corta: " + new Gson().toJson(linea));
-                            }
-                        } else if (l.contains("NINGUN")) {
-                            System.err.println("CONTIENE 'NINGUN' ...");
-                            fin = true;
-                            break;
+                        // Salida mostrada {nR - name utilidad cinta:}
+                        // La salida es un programa
+                        // Parseamos la salida
+                        //l = l.replaceAll("[\t ]+", " ");
+                        String[] linea = l.split("\\s{2,}"); //Separamos los disitntos campos
+                        for (String prueba : linea) {
+                            System.err.println("Parte: " + prueba);
                         }
-                    }
-                    if (!hay_programa) {
-                        System.err.println("NO HAY PROGRAMA");
+                        if (linea.length >= 4) {
+                            if (last_id == Integer.parseInt(linea[0])) {
+                                // Ha leido dos veces el mismo programa. Salida
+                                System.err.println("Lee dos veces el mismo programa: " + last_id + " vs " + Integer.parseInt(linea[0]));
+                                fin = true;
+                                break;
+                            } else {
+                                //Deberia meterse siempre en el caso 4. Por si acaso se ha dejado el resto de casos
+                                switch (linea.length) {
+                                    case 4:
+                                        System.err.println("Añadido de 5 -> " + new Gson().toJson(linea));
+                                        ret.add(new Program(linea[1], linea[2], linea[3], linea[0]));
+                                        break;
+                                    case 5:
+                                        System.err.println("Añadido de 6 -> " + new Gson().toJson(linea));
+                                        String prog_name = linea[1] + " " + linea[2];
+                                        ret.add(new Program(prog_name, linea[3], linea[4], linea[0]));
+                                        break;
+                                    case 6:
+                                        System.err.println("Añadido de 7 -> " + new Gson().toJson(linea));
+                                        prog_name = linea[1] + " " + linea[2] + " " + linea[3];
+                                        ret.add(new Program(prog_name, linea[4], linea[5], linea[0]));
+                                        break;
+                                }
+
+                                hay_programa = true;
+                                last_id = Integer.parseInt(linea[0]);
+                            }
+                            // Minima longitud de la lista.
+                        } else {
+                            System.err.println("Linea muy corta: " + new Gson().toJson(linea));
+                        }
+                    } else if (l.contains("NINGUN")) {
+                        System.err.println("CONTIENE 'NINGUN' ...");
                         fin = true;
                         break;
                     }
-                } catch (TesseractException e) {
-                    e.printStackTrace();
+                }
+                if (!hay_programa) {
+                    System.err.println("NO HAY PROGRAMA");
+                    fin = true;
+                    break;
                 }
                 RobotAdapter.type(robot, "N\n");
                 sleep(2 * 1000);
@@ -279,15 +280,16 @@ public class MSDOSWrapper {
             BufferedImage image = robot.createScreenCapture(new Rectangle(window_x, window_y, 300, 200));
             //saveImage(image);
             // Escaneo OCR de la captura
-            Tesseract1 ocr = new Tesseract1();
-            ocr.setLanguage(TRAINED_DATA);
-            ocr.setTessVariable("user_defined_dpi", "70");
+//            Tesseract1 ocr = new Tesseract1();
+//            ocr.setLanguage(TRAINED_DATA);
+//            ocr.setTessVariable("user_defined_dpi", "70");
             String result = null;
-            try {
-                result = ocr.doOCR(image);
-            } catch (TesseractException e) {
-                e.printStackTrace();
-            }
+            result = ocr.getText(image);
+//            try {
+//                result = ocr.doOCR(image);
+//            } catch (TesseractException e) {
+//                e.printStackTrace();
+//            }
             int numRecords = 0;
             if (result != null) {
                 // Procesamiento de salida
