@@ -1,5 +1,6 @@
-package es.sistemaslegados2.Wrapper_MSDOS.OCR;
+package es.sistemaslegados2.Wrapper_MSDOS.OCR.Impl;
 
+import es.sistemaslegados2.Wrapper_MSDOS.OCR.OCRInterface;
 import net.sourceforge.tess4j.Tesseract1;
 import net.sourceforge.tess4j.TesseractException;
 
