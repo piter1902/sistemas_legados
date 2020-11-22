@@ -9,18 +9,17 @@ import org.springframework.stereotype.Repository;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 @Repository
 public class MSDOSWrapper {
 
     // Final Attributes
-    private static final String DOSBOX_PATH = "/usr/bin/dosbox";
+    private static final String XTERM_PATH = "/usr/bin/xterm";
+    private static final String DOSEMU_PATH = "/usr/bin/dosemu";
     private static final String WMCTRL_PATH = "/usr/bin/wmctrl";
     private static final String TRAINED_DATA = "./tessdata/spa";
     public static final int INITIAL_SLEEP = 5000;
@@ -28,9 +27,13 @@ public class MSDOSWrapper {
     // Attributes
     private Robot robot;
     // Dosbox proccess
-    private Process dosbox;
+    private Process dosemu;
     private int window_x;
     private int window_y;
+
+    // Dosemu Program
+    private Scanner output;
+    private PrintWriter input;
 
     // OCR
     @Autowired
@@ -48,14 +51,14 @@ public class MSDOSWrapper {
 
     public List<Program> getProgramByTape(String tape) {
         // Ejecutar DosBox
-        ProcessBuilder dosbox_builder = new ProcessBuilder(DOSBOX_PATH);
+        ProcessBuilder dosbox_builder = new ProcessBuilder(DOSEMU_PATH);
         try {
-            dosbox = dosbox_builder.start();
+            dosemu = dosbox_builder.start();
         } catch (IOException e) {
             e.printStackTrace();
         }
         List<Program> ret = new ArrayList<>();
-        if (dosbox != null) {
+        if (dosemu != null) {
             sleep(INITIAL_SLEEP);
             // Para buscar el programa por nombre -> option 7 y N
             RobotAdapter.type(robot, "6");
@@ -115,7 +118,7 @@ public class MSDOSWrapper {
                                             System.err.println("MUCHO TEXTO POR DIOS -> " + new Gson().toJson(separados));
                                     }
                                 } else {
-                                    System.err.println("NO Añadido -> " + new Gson().toJson(separados) + " : " + separados[separados.length-2]);
+                                    System.err.println("NO Añadido -> " + new Gson().toJson(separados) + " : " + separados[separados.length - 2]);
                                 }
                             } else {
                                 System.err.println("Longitud invalida " + separados.length + " --- " + new Gson().toJson(separados));
@@ -137,20 +140,20 @@ public class MSDOSWrapper {
                 result = ocr.getText(image);
             } while (!result.trim().matches("M *E *N *U") && !result.trim().contains("ACABAR"));
             System.err.println("---> Salida del bucle");
-            exitDosBox();
+            exitDosemu();
         }
         return ret;
     }
 
     public List<Program> getProgramByName(String name) {
         // Ejecutar DosBox
-        ProcessBuilder dosbox_builder = new ProcessBuilder(DOSBOX_PATH);
+        ProcessBuilder dosbox_builder = new ProcessBuilder(DOSEMU_PATH);
         try {
-            dosbox = dosbox_builder.start();
+            dosemu = dosbox_builder.start();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if (dosbox != null) {
+        if (dosemu != null) {
             sleep(INITIAL_SLEEP);
             // Para buscar el programa por nombre -> option 7 y N
             RobotAdapter.type(robot, "7");
@@ -247,7 +250,7 @@ public class MSDOSWrapper {
             sleep(100);
             RobotAdapter.type(robot, "N\n");
             sleep(100);
-            exitDosBox();
+            exitDosemu();
             return ret;
         }
         throw new RuntimeException("Error al iniciar la aplicacion legada");
@@ -263,52 +266,71 @@ public class MSDOSWrapper {
 
     public int getRecordNumber() {
         // Ejecutar DosBox
-        ProcessBuilder dosbox_builder = new ProcessBuilder(DOSBOX_PATH);
+        ProcessBuilder dosbox_builder =
+                new ProcessBuilder(XTERM_PATH, "-e", DOSEMU_PATH + "-t ../Database-MSDOS/Database/gwbasic.bat");
+        System.err.println("Entro al proceso");
         try {
-            dosbox = dosbox_builder.start();
+            dosemu = dosbox_builder.start();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if (dosbox != null) {
+        if (dosemu != null) {
+            createRedirections();
+            // Enter al empezar
+            input.println("");
+            // Sleep ZZZZZZZZZZZ
             sleep(INITIAL_SLEEP);
             // Para obtener el nº de registros -> Option 4 y arriba a la derecha
-            RobotAdapter.type(robot, "4");
+//            RobotAdapter.type(robot, "4");
+            input.println("4");
             sleep(300);
             // Obtencion de las coordenadas de la aplicacion legada
-            updateWindowsConst();
+//            updateWindowsConst();
             // Captura de pantalla
-            BufferedImage image = robot.createScreenCapture(new Rectangle(window_x, window_y, 300, 200));
+//            BufferedImage image = robot.createScreenCapture(new Rectangle(window_x, window_y, 300, 200));
             //saveImage(image);
             // Escaneo OCR de la captura
 //            Tesseract1 ocr = new Tesseract1();
 //            ocr.setLanguage(TRAINED_DATA);
 //            ocr.setTessVariable("user_defined_dpi", "70");
-            String result = null;
-            result = ocr.getText(image);
+//            String result = null;
+//            result = ocr.getText(image);
 //            try {
 //                result = ocr.doOCR(image);
 //            } catch (TesseractException e) {
 //                e.printStackTrace();
 //            }
             int numRecords = 0;
-            if (result != null) {
-                // Procesamiento de salida
-                String[] lineas = result.split("\n");
-                for (String l : lineas) {
-                    if (l.contains("ARCHIVOS")) {
-                        System.err.println(l);
-                        numRecords = Integer.parseInt(l.split("[\t ]+")[1]);
-                        // Salida del bucle
-                        break;
-                    }
+//            if (result != null) {
+            // Procesamiento de salida
+//                String[] lineas = result.split("\n");
+            String l = output.nextLine();
+            System.err.println("Entro al while");
+            while (l != null) {
+                System.err.println(l);
+                if (l.contains("ARCHIVOS")) {
+                    System.err.println(l);
+                    numRecords = Integer.parseInt(l.split("[\t ]+")[1]);
+                    // Salida del bucle
+                    break;
                 }
+                System.err.println("Intento leer la siguiente linea");
+                System.err.println("Estado del descriptor: " + output.hasNext());
+                l = output.nextLine();
             }
+//            }
             sleep(1000);
-            RobotAdapter.type(robot, "\n");
-            exitDosBox();
+//            RobotAdapter.type(robot, "\n");
+            input.println("");
+            exitDosemu();
             return numRecords;
         }
         throw new RuntimeException("Error al iniciar la aplicacion legada");
+    }
+
+    private void createRedirections() {
+        output = new Scanner(new InputStreamReader(dosemu.getInputStream()));
+        input = new PrintWriter(new OutputStreamWriter(dosemu.getOutputStream()));
     }
 
     private void saveImage(BufferedImage image, String filename) {
@@ -361,8 +383,8 @@ public class MSDOSWrapper {
         }
     }
 
-    private void exitDosBox() {
-        if (dosbox != null) {
+    private void exitDosemu() {
+        if (dosemu != null) {
             RobotAdapter.type(robot, "8");
             try {
                 Thread.sleep(100);
@@ -373,8 +395,8 @@ public class MSDOSWrapper {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
             }
-            dosbox.destroy();
-            dosbox = null;
+            dosemu.destroy();
+            dosemu = null;
         }
 
     }
