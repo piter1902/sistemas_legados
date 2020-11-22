@@ -124,10 +124,10 @@ Para integrar este \emph{frontend} con el código del servidor de \emph{backend}
 
 \subsection{Backend del Wrapper}
 El lenguaje utilizado para la realización de la práctica ha sido \textit{Java}, ya que, además de ser un lenguaje muy flexible y cómodo para los integrantes del grupo, se tiene experiencia con las herramientas que se utilizarán durante el desarrollo de la práctica.\\
-{\Huge \textbf{Esto es redundante porque se ha comentado en el apartado de \emph{Tecnología elegida}.}}\\
+%{\Huge \textbf{Esto es redundante porque se ha comentado en el apartado de \emph{Tecnología elegida}.}}\\
 
 Para la realización de la parte del \textit{Backend} se ha utilizado el \textit{framework SpringBoot}. Se ha escogido esta tecnología principalmente debido a que \textit{Spring} incluye un servidor \textit{apache Tomcat}, lo que facilita mucho su configuración y despliegue. Para la integración de \textit{Spring} se ha utilizado \textit{Gradle}, un gestor de dependencias simple y fácil de utilizar que se ha utilizado anteriormente en otras asignaturas.\\
-\textbf{COMENTAR ALGO MÁS DE LAS TECNOLOGÍAS?}\\
+%\textbf{COMENTAR ALGO MÁS DE LAS TECNOLOGÍAS?}\\
 
 Como se ha mencionado anteriormente, se expone una \textit{API REST} mediante la cual el cliente puede acceder a distintos recursos proporcionados por el servidor a través de las opciones que se muestran en la página principal. Para ello, se han creado tres \textit{endpoints}:
 \begin{itemize}
@@ -147,9 +147,15 @@ Para indicar al objeto de la clase \textit{OCR} el lugar en la pantalla que debe
 Como el reconocimiento de carácteres no es perfecto se probaron otras alternativas, aunque sin éxito para tratar de mejorar la precisión del mismo. Se probó el invertir los colores de la imagen para obtener el fondo blanco y el texto en negro. También se trató de binarizar los colores de las imágenes a blanco y negro puro y no el gris que se utiliza en la terminal. Ninguna de estas opciones dieron buenos resultados.\\
 Se intentó utilizar otra herramienta de reconocimiento de caracteres. La herramienta era \emph{Asprise OCR\footnote{\url{https://asprise.com/royalty-free-library/java-ocr-api-overview.html}}}. Esta herramienta en su versión de prueba sustituye los caracteres \emph{q,x,0,9} por un asterisco (\emph{*}). Tras intentar utilizar esta herramienta, creando una interfaz \emph{OCRInterface} para la unificación de opciones.\\
 
-Tras la derrota en el campo del OCR se planteó el uso de otro emulador de \emph{MSDOS}. Se probó \emph{dosemu\footnote{\url{http://www.dosemu.org/}}}. Este emulador tiene la característica de poder utilizar la terminal como una \emph{``dumb terminal''} con la opción \emph{-dumb}.\\
+Tras la derrota en el campo del OCR se planteó el uso de otro emulador de \emph{MSDOS}. Se probó \emph{dosemu\footnote{\url{http://www.dosemu.org/}}}. Este emulador tiene la característica de poder utilizar la terminal como una \emph{``dumb terminal''} con la opción \emph{-dumb}. Con esta opción el programa legado no funcionaba ya que no es una aplicación que escriba en la salida estándar.\\
+Con la opción \emph{-t} el emulador funciona como \emph{-dumb} pero utilizando colores\footnote{\textbf{\url{https://retrocomputing.stackexchange.com/questions/16173/emulate-a-text-mode-dos-program-using-a-unix-terminal}}}. Desde una terminal haciendo las pruebas manualmente parecía funcionar pero luego, llevado a la implementación en \emph{Java} no. Ocurría lo mismo que con la opción \emph{-dumb}, aparecía una sola línea en la salida estándar que mostraba:
 
-\textbf{Contar más sobre el dosemu y la opción -t.}
+\begin{lstlisting}
+C:\Database\>gwbasic.exe database
+\end{lstlisting}
+
+
+\textbf{Contar más sobre el dosemu, xtrem y la opción -t.}
 
 
 
