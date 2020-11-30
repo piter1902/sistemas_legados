@@ -116,8 +116,13 @@ Este \emph{framework} nos permite mostrar el contenido de manera dinámica en la
 Para la elaboración del código en \emph{HTML}, se ha utilizado la herramienta \emph{Bootstrap}, de código abierto y de uso gratuito que dispone de plantillas \emph{HTML} y \emph{CSS} para interfaces de usuario que permite que éstas sean usables y accesibles. Esta herramienta cuenta con plantillas de todo tipo desde distintas estructuras como pueden ser listas, tablas, filas o columnas hasta botones ya diseñados, lo que ha permitido que la implementación haya sido tanto poco costosa como intuitiva para el usuario.\\
 Para el proceso de desarrollo se ha utilizado la herramienta \texttt{npm}, que es un gestor de dependencias de \emph{JavaScript}. Sirve para instalar y gestionar versiones de paquetes y librerías, y permite ver en tiempo real el resultado de la página web en un navegador web tan solo guardando los cambios efectuados en el código.\\
 
-\textbf{Metemos captura de como queda la página??? {\Huge SI}}\\
-
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=0.4]{images/cap_legados_web.png}
+\caption{Captura de pantalla de la interfaz web}
+\label{fig:aplicacion_legada_web}
+\end{figure}
+\newpage
 Para integrar este \emph{frontend} con el código del servidor de \emph{backend} se ha creado un \emph{script BASH} para compilar y copiar el resultado de este proyecto al servidor \emph{backend}. El código del \emph{script} es el mostrado en el código \ref{list:copyToTomcat}.
 
 \lstinputlisting[language=sh, label=list:copyToTomcat]{listings/copyToTomcat.sh}
