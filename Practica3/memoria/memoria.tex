@@ -152,16 +152,16 @@ Para indicar al objeto de la clase \textit{OCR} el lugar en la pantalla que debe
 Como el reconocimiento de carácteres no es perfecto se probaron otras alternativas, aunque sin éxito para tratar de mejorar la precisión del mismo. Se probó el invertir los colores de la imagen para obtener el fondo blanco y el texto en negro. También se trató de binarizar los colores de las imágenes a blanco y negro puro y no el gris que se utiliza en la terminal. Ninguna de estas opciones dieron buenos resultados.\\
 Se intentó utilizar otra herramienta de reconocimiento de caracteres. La herramienta era \emph{Asprise OCR\footnote{\url{https://asprise.com/royalty-free-library/java-ocr-api-overview.html}}}. Esta herramienta en su versión de prueba sustituye los caracteres \emph{q,x,0,9} por un asterisco (\emph{*}). Tras intentar utilizar esta herramienta, creando una interfaz \emph{OCRInterface} para la unificación de opciones.\\
 
-Tras la derrota en el campo del OCR se planteó el uso de otro emulador de \emph{MSDOS}. Se probó \emph{dosemu\footnote{\url{http://www.dosemu.org/}}}. Este emulador tiene la característica de poder utilizar la terminal como una \emph{``dumb terminal''} con la opción \emph{-dumb}. Con esta opción el programa legado no funcionaba ya que no es una aplicación que escriba en la salida estándar.\\
+Tras la derrota en el campo del OCR se planteó el uso de otro emulador de \emph{MSDOS} para intentar leer la salida estándar del programa y evitar el uso de OCR. Se probó \emph{dosemu\footnote{\url{http://www.dosemu.org/}}}. Este emulador tiene la característica de poder utilizar la terminal como una \emph{``dumb terminal''} con la opción \emph{-dumb}. Con esta opción el programa legado no funcionaba ya que no es una aplicación que escriba en la salida estándar.\\
 Con la opción \emph{-t} el emulador funciona como \emph{-dumb} pero utilizando colores\footnote{\textbf{\url{https://retrocomputing.stackexchange.com/questions/16173/emulate-a-text-mode-dos-program-using-a-unix-terminal}}}. Desde una terminal haciendo las pruebas manualmente parecía funcionar pero luego, llevado a la implementación en \emph{Java} no. Ocurría lo mismo que con la opción \emph{-dumb}, aparecía una sola línea en la salida estándar que mostraba:
 
 \begin{lstlisting}
 C:\Database\>gwbasic.exe database
 \end{lstlisting}
 
+Se buscaron soluciones en distintos foros como \href{https://www.vogons.org/viewtopic.php?t=36268}{Vogons}, aunque ninguna de las soluciones propuestas resultó de utilidad. Otra de las \href{https://www.reddit.com/r/dosbox/comments/bvoij9/piping_dosboxs_output_to_stdout_and_stderr/}{soluciones} propuestas indicaba que se utilizara la opción \textit{- noconsole} de \textit{DOSBox} para Windows, con la que tampoco se consiguió redirigir la salida.
 
-\textbf{Contar más sobre el dosemu, xtrem y la opción -t.}
-
+En resumen, la única solución funcional ha consistido en el uso del OCR la cual, aunque no reconoce correctamente el 100\% de los caracteres, podemos obtener la salida del emulador desde el programa en Java.
 
 
 
